@@ -5,7 +5,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.finances.Database.models.DailyGrouthDao;
+import com.example.finances.Database.models.DailyGrowthDao;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class MyEasyTable extends TableLayout {
         super(context);
     }
 
-    public MyEasyTable(Context context, ArrayList<DailyGrouthDao> values, int id) {
+    public MyEasyTable(Context context, ArrayList<DailyGrowthDao> values, int id) {
         super(context);
         this.setId(id);
 
@@ -26,11 +26,11 @@ public class MyEasyTable extends TableLayout {
                 addRow(toAdd);
                 toAdd = "";
             }
-            toAdd += values.get(i).id + " : " + values.get(i).value + ", ";
+            toAdd += values.get(i).toString();
         }
 
         if(toAdd.length() > 0)
-            addRow(toAdd.substring(0, toAdd.length()-2));
+            addRow(toAdd.substring(0, toAdd.length()));
     }
 
     public void addRow(String value) {

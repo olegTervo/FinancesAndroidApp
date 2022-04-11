@@ -85,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
                 value.setText("");
 
                 try {
-                    boolean added = DailyGrowthHelper.set(db, Integer.parseInt(idText), Integer.parseInt(valueText));
+                    boolean added = DailyGrowthHelper.update(db, Integer.parseInt(idText), Integer.parseInt(valueText));
 
                     if(!added)
                         Toast.makeText(SettingsActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();

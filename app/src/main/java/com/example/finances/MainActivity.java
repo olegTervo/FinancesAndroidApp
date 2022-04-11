@@ -13,10 +13,11 @@ import android.widget.Toast;
 
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
-import com.example.finances.Database.models.DailyGrouthDao;
+import com.example.finances.Database.models.DailyGrowthDao;
 import com.example.finances.views.LinearGraph;
 import com.example.finances.views.MyEasyTable;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 DataTable.addRow(text);
 
                 try {
-                    boolean added = DailyGrowthHelper.add(db, Integer.parseInt(text));
+                    boolean added = DailyGrowthHelper.create(db, Integer.parseInt(text), LocalDate.now());
 
                     if(!added)
                         Toast.makeText(MainActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
@@ -91,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout GraphView = findViewById(R.id.graph);
         ConstraintLayout TableView = findViewById(R.id.table);
 
-        ArrayList<DailyGrouthDao> values = DailyGrowthHelper.getValues(db);
+        DailyGrowthHelper.sync(db);
+        ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
 
         int tableId = 1100008;
         int graphId = 1100009;

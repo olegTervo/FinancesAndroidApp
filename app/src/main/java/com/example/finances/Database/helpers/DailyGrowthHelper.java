@@ -4,11 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.finances.Database.models.DailyGrouthDao;
+import com.example.finances.Database.models.DailyGrowthDao;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class DailyGrowthHelper{
@@ -27,10 +25,70 @@ public class DailyGrowthHelper{
         return initialString;
     }
 
-    public static boolean add(DatabaseHelper connection, int number) {
+    public static boolean sync(DatabaseHelper connection) {
+        DailyGrowthDao top = getFirst(connection);
+
+        if(top != null) {
+            int daily = VariablesHelper.getVariable(connection, 1);
+            LocalDate last = top.date;
+
+            while(LocalDate.now().isAfter(last)) {
+                last = last.plusDays(1);
+                create(connection, daily, last);
+            }
+        }
+        else
+            create(connection, 0, LocalDate.now());
+
+        return true;
+    }
+
+    private static DailyGrowthDao getFirst(DatabaseHelper connection) {
+        DailyGrowthDao result = null;
+        SQLiteDatabase db = connection.getReadableDatabase();
+
+        String getScript = "SELECT "
+                + ID_COLUMN_NAME + ", "
+                + FINANCES_TABLE_VALUE_COLUMN_NAME + ", "
+                + FINANCES_TABLE_DATE_COLUMN_NAME
+                + " FROM " + FINANCES_TABLE_NAME
+                + " ORDER BY " + ID_COLUMN_NAME
+                + " DESC LIMIT 1";
+
+        Cursor reader = db.rawQuery(getScript, null);
+
+        if (reader.moveToFirst())
+            result = new DailyGrowthDao(
+                    reader.getInt(0)
+                    , reader.getInt(1)
+                    , LocalDate.parse(reader.getString(2))
+            );
+
+        reader.close();
+        db.close();
+
+        return result;
+    }
+
+    private static boolean hasAny(DatabaseHelper connection) {
+        SQLiteDatabase db = connection.getReadableDatabase();
+        String getScript = "SELECT " + FINANCES_TABLE_VALUE_COLUMN_NAME + " FROM " + FINANCES_TABLE_NAME + " ORDER BY " + ID_COLUMN_NAME + " DESC LIMIT 1";
+        Cursor reader = db.rawQuery(getScript, null);
+
+        boolean result = reader.moveToFirst();
+        reader.close();
+        db.close();
+
+        return result;
+    }
+
+    public static boolean create(DatabaseHelper connection, int number, LocalDate date) {
         int last = getTopValue(connection);
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();
+
+        if(date != null)
+            cv.put(FINANCES_TABLE_DATE_COLUMN_NAME, date.toString());
 
         cv.put(FINANCES_TABLE_VALUE_COLUMN_NAME, number+last);
         long res = db.insert(FINANCES_TABLE_NAME, null, cv);
@@ -41,9 +99,9 @@ public class DailyGrowthHelper{
         return true;
     }
 
-    public static ArrayList<DailyGrouthDao> getValues(DatabaseHelper connection) {
+    public static ArrayList<DailyGrowthDao> getValues(DatabaseHelper connection) {
         SQLiteDatabase db = connection.getReadableDatabase();
-        ArrayList<DailyGrouthDao> result = new ArrayList<>();
+        ArrayList<DailyGrowthDao> result = new ArrayList<>();
 
         String getScript = "SELECT "
                 + ID_COLUMN_NAME + ", "
@@ -58,10 +116,10 @@ public class DailyGrowthHelper{
         if (reader.moveToFirst())
             do {
                 result.add(
-                        new DailyGrouthDao(
+                        new DailyGrowthDao(
                                 reader.getInt(0)
                                 , reader.getInt(1)
-                                , LocalDate.parse(reader.getString(2), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                , LocalDate.parse(reader.getString(2))
                         )
                 );
             } while (reader.moveToNext());
@@ -94,7 +152,7 @@ public class DailyGrowthHelper{
         db.delete(FINANCES_TABLE_NAME, "", null);
     }
 
-    public static boolean set(DatabaseHelper connection, int id, int value) {
+    public static boolean update(DatabaseHelper connection, int id, int value) {
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();
 

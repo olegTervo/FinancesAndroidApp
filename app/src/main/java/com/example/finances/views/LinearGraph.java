@@ -13,7 +13,7 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-import com.example.finances.Database.models.DailyGrouthDao;
+import com.example.finances.Database.models.DailyGrowthDao;
 import com.example.finances.R;
 import com.example.finances.models.GraphPoint;
 
@@ -24,9 +24,9 @@ import java.util.List;
 
 public class LinearGraph extends View {
     private List<GraphPoint> points;
-    private List<DailyGrouthDao> values;
+    private List<DailyGrowthDao> values;
 
-    public LinearGraph(Context context, ArrayList<DailyGrouthDao> values, int id) {
+    public LinearGraph(Context context, ArrayList<DailyGrowthDao> values, int id) {
         super(context);
         Collections.reverse(values);
         this.values = values;
@@ -146,14 +146,14 @@ public class LinearGraph extends View {
         return path;
     }
 
-    private static void setPoints(List<GraphPoint> points, List<DailyGrouthDao> values, int height, int width) {
+    private static void setPoints(List<GraphPoint> points, List<DailyGrowthDao> values, int height, int width) {
         int max = height;
         int min = -height;
         float stepX = width/30;
 
         int i = 0;
 
-        for(DailyGrouthDao grouth : values) {
+        for(DailyGrowthDao grouth : values) {
             if(grouth.value > max)
                 points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
             else if(grouth.value < min)
