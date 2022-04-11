@@ -11,7 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.finances.models.Grouth;
+import com.example.finances.Database.helpers.DailyGrowthHelper;
+import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.models.DailyGrouthDao;
 import com.example.finances.views.LinearGraph;
 import com.example.finances.views.MyEasyTable;
 
@@ -19,7 +21,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private MyEasyTable DataTable;
-    private DataBaseHelper db;
+    private DatabaseHelper db;
     private SettingsActivity settingsView;
 
     @Override
@@ -27,11 +29,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DataBaseHelper(this);
+        db = new DatabaseHelper(this);
         DataTable = new MyEasyTable(this);
 
         drawGraph();
         MakeButtonHandlers();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        drawGraph();
     }
 
     @Override
@@ -53,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 DataTable.addRow(text);
 
                 try {
-                    boolean added = db.add(Integer.parseInt(text));
+                    boolean added = DailyGrowthHelper.add(db, Integer.parseInt(text));
 
                     if(!added)
                         Toast.makeText(MainActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
@@ -83,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         ConstraintLayout GraphView = findViewById(R.id.graph);
         ConstraintLayout TableView = findViewById(R.id.table);
 
-        ArrayList<Grouth> values = db.getValues();
+        ArrayList<DailyGrouthDao> values = DailyGrowthHelper.getValues(db);
 
         int tableId = 1100008;
         int graphId = 1100009;

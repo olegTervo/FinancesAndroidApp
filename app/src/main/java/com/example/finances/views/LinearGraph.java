@@ -13,9 +13,9 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
+import com.example.finances.Database.models.DailyGrouthDao;
 import com.example.finances.R;
 import com.example.finances.models.GraphPoint;
-import com.example.finances.models.Grouth;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,9 +24,9 @@ import java.util.List;
 
 public class LinearGraph extends View {
     private List<GraphPoint> points;
-    private List<Grouth> values;
+    private List<DailyGrouthDao> values;
 
-    public LinearGraph(Context context, ArrayList<Grouth> values, int id) {
+    public LinearGraph(Context context, ArrayList<DailyGrouthDao> values, int id) {
         super(context);
         Collections.reverse(values);
         this.values = values;
@@ -115,10 +115,13 @@ public class LinearGraph extends View {
 
     private static Path getGraphLine(List<GraphPoint> points) {
         Path path = new Path();
-        path.moveTo(points.get(0).x, points.get(0).y);
 
-        for (int i = 1; i < points.size(); i++){
-            path.lineTo(points.get(i).x, points.get(i).y);
+        if(points.size() != 0) {
+            path.moveTo(points.get(0).x, points.get(0).y);
+
+            for (int i = 1; i < points.size(); i++){
+                path.lineTo(points.get(i).x, points.get(i).y);
+            }
         }
 
         return path;
@@ -143,14 +146,14 @@ public class LinearGraph extends View {
         return path;
     }
 
-    private static void setPoints(List<GraphPoint> points, List<Grouth> values, int height, int width) {
+    private static void setPoints(List<GraphPoint> points, List<DailyGrouthDao> values, int height, int width) {
         int max = height;
         int min = -height;
         float stepX = width/30;
 
         int i = 0;
 
-        for(Grouth grouth : values) {
+        for(DailyGrouthDao grouth : values) {
             if(grouth.value > max)
                 points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
             else if(grouth.value < min)
