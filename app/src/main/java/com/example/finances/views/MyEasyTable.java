@@ -19,26 +19,31 @@ public class MyEasyTable extends TableLayout {
         super(context);
         this.setId(id);
 
-        String toAdd = "";
+        int n = 3;
+        String[] toAdd = new String[n];
 
         for(int i = 0; i < values.size(); i++) {
-            if(i % 5 == 0 && i > 0) {
+            if(i % n == 0 && i > 0) {
                 addRow(toAdd);
-                toAdd = "";
+                toAdd = new String[n];
             }
-            toAdd += values.get(i).toString();
+            toAdd[i%n] = values.get(i).toString();
         }
 
-        if(toAdd.length() > 0)
-            addRow(toAdd.substring(0, toAdd.length()));
+        if(values.size() % n != 0)
+            addRow(toAdd);
     }
 
-    public void addRow(String value) {
+    public void addRow(String[] columns) {
         TableRow row = new TableRow(this.getContext());
-        TextView rowText = new TextView(this.getContext());
-        rowText.setText(value);
 
-        row.addView(rowText);
+        for(String column : columns) {
+            TextView rowText = new TextView(this.getContext());
+            rowText.setText(column);
+
+            row.addView(rowText);
+        }
+
         addView(row);
     }
 

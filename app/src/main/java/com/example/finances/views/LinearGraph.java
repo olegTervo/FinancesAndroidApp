@@ -25,12 +25,14 @@ import java.util.List;
 public class LinearGraph extends View {
     private List<GraphPoint> points;
     private List<DailyGrowthDao> values;
+    private int target;
 
-    public LinearGraph(Context context, ArrayList<DailyGrowthDao> values, int id) {
+    public LinearGraph(Context context, ArrayList<DailyGrowthDao> values, int id, int target) {
         super(context);
         Collections.reverse(values);
         this.values = values;
         this.setId(id);
+        this.target = target;
     }
 
     @Override
@@ -53,10 +55,12 @@ public class LinearGraph extends View {
             drawVerticalLine(canvas, thinPaint, 400, Math.round(this.getWidth()/30*i));
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate nextMonthFirst = LocalDate.of(today.getYear(), today.getMonth().plus(1), 1);
-        long days = DAYS.between(today, nextMonthFirst)+1;
+        LocalDate firstDate = this.values.get(0).date;
+        LocalDate nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
+        long days = DAYS.between(firstDate, nextMonthFirst)+1;
         drawVerticalLine(canvas, getMonthPaint(this.getContext()), 400, Math.round(this.getWidth()/30*days));
+
+        drawHorizontalLine(canvas, getTargetPaint(this.getContext()), this.getWidth(), 400-this.target);
 
         canvas.drawPath(getGraphLine(this.points), getGraphPaint(this.getContext()));
     }
@@ -100,6 +104,15 @@ public class LinearGraph extends View {
         paint.setColor(color);
         paint.setStrokeWidth(4);
         paint.setStyle(Paint.Style.STROKE);
+
+        return paint;
+    }
+
+    private static Paint getTargetPaint(Context context) {
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(1);
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
         return paint;
     }
@@ -153,10 +166,10 @@ public class LinearGraph extends View {
 
         int i = 0;
 
-        for(DailyGrowthDao grouth : values) {
-            if(grouth.value > max)
+        for(DailyGrowthDao growth : values) {
+            if(growth.value > max)
                 points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
-            else if(grouth.value < min)
+            else if(growth.value < min)
                 points.add(new GraphPoint((i*stepX), height*2)); // lowest point
             else
                 points.add(new GraphPoint((i*stepX), (height - values.get(i).value))); // normal case

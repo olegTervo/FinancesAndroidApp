@@ -1,5 +1,7 @@
 package com.example.finances;
 
+import static com.example.finances.MainActivity.log;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,10 +16,13 @@ import android.widget.Toast;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
+import com.example.finances.enums.VariableType;
 
 public class SettingsActivity extends AppCompatActivity {
     private DatabaseHelper db;
     private int DailyGrowth;
+    private int Target;
+    private int Actives;
 
     public SettingsActivity() {
         this.db = new DatabaseHelper(this);
@@ -34,43 +39,25 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void setData() {
         EditText dailyGrowth = findViewById(R.id.dailyGrowth);
+        EditText target = findViewById(R.id.target);
+        EditText actives = findViewById(R.id.actives);
+
         dailyGrowth.setText("" + this.DailyGrowth);
+        target.setText("" + this.Target);
+        actives.setText("" + this.Actives);
     }
 
     private void getData() {
-        this.DailyGrowth = VariablesHelper.getVariable(db, 1);
+        this.DailyGrowth = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.DailyGrowth));
+        this.Target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target));
+        this.Actives = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
     }
 
     private void setButtons() {
-        Button empty = findViewById(R.id.emptyButton);
         Button submit = findViewById(R.id.submitById);
         Button submitDailyGrowth = findViewById(R.id.submitDailyGrowth);
-
-        empty.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    new AlertDialog.Builder(view.getContext())
-                            .setTitle("Are you sure?")
-                            .setMessage("Do you really want to clear DB?")
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    Toast.makeText(SettingsActivity.this, "Clearing database...", Toast.LENGTH_LONG).show();
-                                    DailyGrowthHelper.delete(db);
-                                    Toast.makeText(SettingsActivity.this, "Cleared!", Toast.LENGTH_LONG).show();
-                                }})
-
-                            .setNegativeButton(android.R.string.no, null)
-                            .show();
-                }
-                catch (Exception e) {
-                    Toast.makeText(SettingsActivity.this, "Failed to clear database" + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        Button submitTarget = findViewById(R.id.submitTarget);
+        Button submitActives = findViewById(R.id.submitActives);
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,12 +75,12 @@ public class SettingsActivity extends AppCompatActivity {
                     boolean added = DailyGrowthHelper.update(db, Integer.parseInt(idText), Integer.parseInt(valueText));
 
                     if(!added)
-                        Toast.makeText(SettingsActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
+                        log(SettingsActivity.this, "Failed to insert into database, returned false");
                     else
-                        Toast.makeText(SettingsActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
+                        log(SettingsActivity.this, "Saved successfully!");
                 }
                 catch (Exception e) {
-                    Toast.makeText(SettingsActivity.this, "Failed to insert into database" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    log(SettingsActivity.this, "Failed to insert into database" + e.getMessage());
                 }
             }
         });
@@ -101,18 +88,56 @@ public class SettingsActivity extends AppCompatActivity {
         submitDailyGrowth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView dailyGrouth = findViewById(R.id.dailyGrowth);
+                TextView dailyGrowth = findViewById(R.id.dailyGrowth);
 
                 try {
-                    boolean changed = VariablesHelper.setVariable(db, 1, Integer.parseInt(dailyGrouth.getText().toString()));
+                    boolean changed = VariablesHelper.setVariable(db, VariableType.toInt(VariableType.DailyGrowth), Integer.parseInt(dailyGrowth.getText().toString()));
 
                     if(!changed)
-                        Toast.makeText(SettingsActivity.this, "Failed to change Variable, returned false", Toast.LENGTH_LONG).show();
+                        log(SettingsActivity.this, "Failed to change Variable, returned false");
                     else
-                        Toast.makeText(SettingsActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
+                        log(SettingsActivity.this, "Saved successfully!");
                 }
                 catch (Exception e) {
-                    Toast.makeText(SettingsActivity.this, "Failed to insert into database" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    log(SettingsActivity.this, "Failed to insert into database" + e.getMessage());
+                }
+            }
+        });
+
+        submitTarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView target = findViewById(R.id.target);
+
+                try {
+                    boolean changed = VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Target), Integer.parseInt(target.getText().toString()));
+
+                    if(!changed)
+                        log(SettingsActivity.this, "Failed to change Variable, returned false");
+                    else
+                        log(SettingsActivity.this, "Saved successfully!");
+                }
+                catch (Exception e) {
+                    log(SettingsActivity.this, "Failed to insert into database");
+                }
+            }
+        });
+
+        submitActives.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView actives = findViewById(R.id.actives);
+
+                try {
+                    boolean changed = VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Actives), Integer.parseInt(actives.getText().toString()));
+
+                    if(!changed)
+                        log(SettingsActivity.this, "Failed to change Variable, returned false");
+                    else
+                        log(SettingsActivity.this, "Saved successfully!");
+                }
+                catch (Exception e) {
+                    log(SettingsActivity.this, "Failed to insert into database" + e.getMessage());
                 }
             }
         });

@@ -1,5 +1,7 @@
 package com.example.finances;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -8,12 +10,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.helpers.VariablesHelper;
 import com.example.finances.Database.models.DailyGrowthDao;
+import com.example.finances.enums.VariableType;
 import com.example.finances.views.LinearGraph;
 import com.example.finances.views.MyEasyTable;
 
@@ -21,9 +28,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private MyEasyTable DataTable;
     private DatabaseHelper db;
-    private SettingsActivity settingsView;
+
+    private int DailyGrowth;
+    private int Target;
+    private int Balance;
+    private int Actives;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,27 +41,41 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = new DatabaseHelper(this);
-        DataTable = new MyEasyTable(this);
 
-        drawGraph();
+        refresh();
         MakeButtonHandlers();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        drawGraph();
+        refresh();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        refresh();
+    }
+
+    private void refresh() {
+        getData();
+        setData();
         drawGraph();
     }
 
     private void MakeButtonHandlers() {
         Button submit = findViewById(R.id.button2);
         Button settings = findViewById(R.id.openSettingsButton);
+        Button menu = findViewById(R.id.menuButton);
+
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, DatabaseActivity.class);
+                startActivity(intent);
+            }
+        });
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 TextView textView = findViewById(R.id.editTextTextPersonName);
                 String text = textView.getText().toString();
                 textView.setText("");
-                DataTable.addRow(text);
 
                 try {
                     boolean added = DailyGrowthHelper.create(db, Integer.parseInt(text), LocalDate.now());
@@ -80,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // setContentView(R.layout.activity_settings);
-
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
@@ -89,33 +110,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void drawGraph() {
+        int graphId = 1100009;
         ConstraintLayout GraphView = findViewById(R.id.graph);
-        ConstraintLayout TableView = findViewById(R.id.table);
 
         DailyGrowthHelper.sync(db);
         ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
-
-        int tableId = 1100008;
-        int graphId = 1100009;
-
-        LinearGraph graph = new LinearGraph(this, values, graphId);
-        MyEasyTable table = new MyEasyTable(this, values, tableId);
+        int target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target)) - VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+        LinearGraph graph = new LinearGraph(this, values, graphId, target);
 
         if(GraphView.getViewById(graphId) != null)
             GraphView.removeView(findViewById(graphId));
 
         GraphView.addView(graph);
+    }
 
-        if(TableView.getViewById(tableId) != null)
-            TableView.removeView(findViewById(tableId));
+    private void getData() {
+        this.DailyGrowth = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.DailyGrowth));
+        this.Target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target));
+        this.Actives = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+    }
 
-        TableView.addView(table);
+    private void setData() {
+        TableLayout valueTable = findViewById(R.id.mainTable);
+        valueTable.removeAllViews();
 
-        /*
-        String valuesToString = "" ;
-        for(int v : values) valuesToString += v + ", ";
-        Toast.makeText(MainActivity.this, "Values: " + valuesToString, Toast.LENGTH_LONG).show();
-        */
+        int daysToIncome = LocalDate.now().getDayOfMonth() < 20
+                ? (int) DAYS.between(LocalDate.now(), LocalDate.now().withDayOfMonth(20))
+                : (int) DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(1).withDayOfMonth(20));
+        this.Balance = DailyGrowthHelper.getTopValue(db) + this.DailyGrowth * daysToIncome;
+        VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
+
+        addRow("+: " + this.Balance, valueTable);
+        addRow("- : " + this.Actives, valueTable);
+        addRow("Use: " + this.DailyGrowth + "/day", valueTable);
+        addRow("Target: " + this.Target, valueTable);
+        addRow("Days left: " + daysToIncome, valueTable);
+    }
+
+    private void addRow(String value, TableLayout table) {
+        TableRow row = new TableRow(this);
+        TextView rowText = new TextView(this);
+        rowText.setText(value);
+
+        row.addView(rowText);
+        table.addView(row);
     }
 
     public static void log(Context context, String text) {

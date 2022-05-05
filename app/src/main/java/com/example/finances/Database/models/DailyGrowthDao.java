@@ -15,6 +15,6 @@ public class DailyGrowthDao {
 
     @Override
     public String toString() {
-        return "|" + id + "|" + value + "€|" + date.getDayOfMonth() + "|";
+        return "id:" + id + "|" + value + "€|" + date.getDayOfMonth() + "th";
     }
 }

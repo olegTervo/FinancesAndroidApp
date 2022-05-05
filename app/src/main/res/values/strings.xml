@@ -2,9 +2,10 @@
     <string name="app_name">Finances</string>
     <string name="submitButton">Submit</string>
     <string name="emptyButton">Empty database</string>
-    <string name="inputPreset">Grouth</string>
+    <string name="inputPreset">Savings change</string>
     <string name="EmptyString" />
     <string name="openSettingsButtonText">Settings</string>
+    <string name="menuButtonText">Menu</string>
     <string name="value">value</string>
     <string name="id">id</string>
 
