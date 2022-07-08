@@ -147,6 +147,40 @@ public class DailyGrowthHelper{
         return result;
     }
 
+    public static boolean increaseTopValue(DatabaseHelper connection, int value) {
+        int lastId = getTopId(connection);
+        int lastValue = getTopValue(connection);
+
+        SQLiteDatabase db = connection.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(FINANCES_TABLE_VALUE_COLUMN_NAME, lastValue + value);
+
+        long res = db.update(FINANCES_TABLE_NAME, cv, "id=?", new String[] { Integer.toString(lastId) });
+
+        if (res == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    public static int getTopId(DatabaseHelper connection) {
+        int result = 0;
+        SQLiteDatabase db = connection.getReadableDatabase();
+
+        String getScript = "SELECT " + ID_COLUMN_NAME + " FROM " + FINANCES_TABLE_NAME + " ORDER BY " + ID_COLUMN_NAME + " DESC LIMIT 1";
+
+        Cursor reader = db.rawQuery(getScript, null);
+
+        if (reader.moveToFirst())
+            result = reader.getInt(0);
+
+        reader.close();
+        db.close();
+
+        return result;
+    }
+
     public static void delete(DatabaseHelper connection) {
         SQLiteDatabase db = connection.getWritableDatabase();
         db.delete(FINANCES_TABLE_NAME, "", null);

@@ -44,11 +44,13 @@ public class LinearGraph extends View {
         Paint defaultPaint = getDefaultPaint();
         Paint thinPaint = getThinPaint();
 
+        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 100);
         drawHorizontalLine(canvas, thinPaint, this.getWidth(), 200);
         drawHorizontalLine(canvas, thinPaint, this.getWidth(), 300);
         drawHorizontalLine(canvas, defaultPaint, this.getWidth(), 400);
         drawHorizontalLine(canvas, thinPaint, this.getWidth(), 500);
         drawHorizontalLine(canvas, thinPaint, this.getWidth(), 600);
+        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 700);
 
         drawVerticalLine(canvas, defaultPaint, 400, 0);
         for(int i = 0; i <= 30; i+=5) {
@@ -150,7 +152,7 @@ public class LinearGraph extends View {
 
     private static Path getVerticalLine(int height, int x) {
         Path path = new Path();
-        int margin = 180;
+        int margin = 80;
         int length = (height - margin) * 2;
 
         path.moveTo(x, margin);

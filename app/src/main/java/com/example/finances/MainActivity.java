@@ -85,14 +85,14 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText("");
 
                 try {
-                    boolean added = DailyGrowthHelper.create(db, Integer.parseInt(text), LocalDate.now());
+                    boolean added = DailyGrowthHelper.increaseTopValue(db, Integer.parseInt(text));
 
                     if(!added)
                         Toast.makeText(MainActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
                     else
                         Toast.makeText(MainActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
 
-                    drawGraph();
+                    refresh();
                 }
                 catch (Exception e) {
                     Toast.makeText(MainActivity.this, "Failed to insert into database" + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -140,19 +140,21 @@ public class MainActivity extends AppCompatActivity {
         this.Balance = DailyGrowthHelper.getTopValue(db) + this.DailyGrowth * daysToIncome;
         VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
 
-        addRow("+: " + this.Balance, valueTable);
-        addRow("- : " + this.Actives, valueTable);
-        addRow("Use: " + this.DailyGrowth + "/day", valueTable);
-        addRow("Target: " + this.Target, valueTable);
-        addRow("Days left: " + daysToIncome, valueTable);
+        addRow(new String[] {"\t+: " + this.Balance,                          "\t\t- : " + this.Actives}, valueTable);
+        addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target}, valueTable);
+        addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome}, valueTable);
     }
 
-    private void addRow(String value, TableLayout table) {
+    private void addRow(String[] columns, TableLayout table) {
         TableRow row = new TableRow(this);
-        TextView rowText = new TextView(this);
-        rowText.setText(value);
 
-        row.addView(rowText);
+        for(String column : columns) {
+            TextView rowText = new TextView(this);
+            rowText.setText(column);
+
+            row.addView(rowText);
+        }
+
         table.addView(row);
     }
 
