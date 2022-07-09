@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -66,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void MakeButtonHandlers() {
         Button submit = findViewById(R.id.button2);
-        Button settings = findViewById(R.id.openSettingsButton);
-        Button menu = findViewById(R.id.menuButton);
+        ImageButton settings = findViewById(R.id.SettingsButtonMain);
+        ImageButton menu = findViewById(R.id.MenuButton);
 
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, DatabaseActivity.class);
+                Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                 startActivity(intent);
             }
         });

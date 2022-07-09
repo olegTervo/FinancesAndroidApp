@@ -22,7 +22,7 @@
 
     <EditText
         android:id="@+id/settingsValueToChange"
-        android:layout_width="100dp"
+        android:layout_width="75dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
@@ -40,7 +40,10 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#01b636"
         android:text="@string/submitButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/settingsValueToChange"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,7 +53,10 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#01b636"
         android:text="@string/submitButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dailyGrowth"
         app:layout_constraintTop_toBottomOf="@+id/submitById" />
 
@@ -60,7 +66,10 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#01b636"
         android:text="@string/submitButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/target"
         app:layout_constraintTop_toBottomOf="@+id/submitDailyGrowth" />
 
@@ -70,13 +79,16 @@
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="#01b636"
         android:text="@string/submitButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/actives"
         app:layout_constraintTop_toBottomOf="@+id/submitTarget" />
 
     <EditText
         android:id="@+id/dailyGrowth"
-        android:layout_width="100dp"
+        android:layout_width="75dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
@@ -87,7 +99,7 @@
 
     <EditText
         android:id="@+id/target"
-        android:layout_width="100dp"
+        android:layout_width="75dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
@@ -98,7 +110,7 @@
 
     <EditText
         android:id="@+id/actives"
-        android:layout_width="100dp"
+        android:layout_width="75dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
@@ -109,37 +121,37 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="37dp"
         android:text="Daily"
         android:textAlignment="center"
-        android:textSize="34sp"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingsIdToChange" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="42dp"
         android:text="Target"
         android:textAlignment="center"
-        android:textSize="34sp"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="42dp"
         android:text="Actives"
         android:textAlignment="center"
-        android:textSize="34sp"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 

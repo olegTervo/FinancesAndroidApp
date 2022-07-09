@@ -10,6 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Finances">
         <activity
+            android:name=".BankActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Finances.NoActionBar" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity
