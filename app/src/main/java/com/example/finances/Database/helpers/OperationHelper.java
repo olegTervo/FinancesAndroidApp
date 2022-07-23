@@ -40,11 +40,13 @@ public class OperationHelper {
         return res;
     }
 
-    public static boolean CreateOperationForAccount(DatabaseHelper connection, int account, int type, int amount, String info) {
+
+
+    public static long CreateOperationForAccount(DatabaseHelper connection, int account, int type, int amount, String info) {
         long result = CreateOperation(connection, type, amount, info);
 
         if(result == -1)
-            return false;
+            return result;
 
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -54,10 +56,7 @@ public class OperationHelper {
 
         long res = db.insert(ACCOUNT_OPERATIONS_TABLE_NAME, null, cv);
 
-        if (res == -1) {
-            return false;
-        }
-        return true;
+        return res;
     }
 
     public static long CreateOperation(DatabaseHelper connection, int type, int amount, String info) {

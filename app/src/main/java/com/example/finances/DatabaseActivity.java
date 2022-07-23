@@ -30,7 +30,7 @@ public class DatabaseActivity extends AppCompatActivity {
     private int DailyGrowth;
     private int Target;
 
-    private MyEasyTable DataTable;
+    private ArrayList<MyEasyTable> DataTable;
     private ArrayList<DailyGrowthDao> Values;
     private ArrayList<OperationDao> BankOperations;
 
@@ -50,7 +50,7 @@ public class DatabaseActivity extends AppCompatActivity {
     private void getData() {
         this.DailyGrowth = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.DailyGrowth));
         this.Target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target));
-        this.DataTable = new MyEasyTable(this);
+        this.DataTable = new ArrayList<MyEasyTable>();
 
         DailyGrowthHelper.sync(db);
         this.Values = DailyGrowthHelper.getValues(db);
@@ -58,14 +58,21 @@ public class DatabaseActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        ConstraintLayout TableView = findViewById(R.id.table);
-        int tableId = 1100008;
+        ConstraintLayout BankOperationsTableView = findViewById(R.id.table);
+        ConstraintLayout DailyGrowthTableView = findViewById(R.id.table1);
+        int tableId = 1101008;
 
-        if(TableView.getViewById(tableId) != null)
-            TableView.removeView(findViewById(tableId));
+        if(BankOperationsTableView.getViewById(tableId) != null)
+            BankOperationsTableView.removeView(findViewById(tableId));
 
-        this.DataTable = new MyEasyTable(this, this.Values, this.BankOperations, tableId);
-        TableView.addView(this.DataTable);
+        this.DataTable.add(new MyEasyTable(this, this.BankOperations.toArray(), tableId));
+        BankOperationsTableView.addView(this.DataTable.get(0));
+
+        if(DailyGrowthTableView.getViewById(tableId+1) != null)
+            DailyGrowthTableView.removeView(findViewById(tableId+1));
+
+        this.DataTable.add(new MyEasyTable(this, this.Values.toArray(), tableId+1));
+        DailyGrowthTableView.addView(this.DataTable.get(1));
     }
 
     private void setButtons() {

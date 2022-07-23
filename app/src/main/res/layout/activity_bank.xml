@@ -10,7 +10,7 @@
         android:id="@+id/BankMoney"
         android:layout_width="220dp"
         android:layout_height="95dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:text="100€"
         android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,6 +67,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/Loans"
         app:layout_constraintTop_toBottomOf="@+id/PutMoney" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ValuesView"
+        android:layout_width="match_parent"
+        android:layout_height="500px"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Investments">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
         android:id="@+id/imageButton"

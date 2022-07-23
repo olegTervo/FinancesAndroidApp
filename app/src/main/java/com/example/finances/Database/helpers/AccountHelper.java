@@ -67,7 +67,7 @@ public class AccountHelper {
         return result;
     }
 
-    public static boolean PutMoney(DatabaseHelper connection, int account, int amount) {
+    public static long PutMoney(DatabaseHelper connection, int account, int amount, String message) {
         int current = GetMoney(connection, account);
 
         SQLiteDatabase db = connection.getWritableDatabase();
@@ -78,9 +78,9 @@ public class AccountHelper {
         long res = db.update(ACCOUNT_TABLE_NAME, cv, "id=?", new String[] { Integer.toString(account) });
 
         if (res == -1) {
-            return false;
+            return res;
         }
 
-        return OperationHelper.CreateOperationForAccount(connection, account, 1, amount, "PutMoney autoinsert");
+        return OperationHelper.CreateOperationForAccount(connection, account, 1, amount, message);
     }
 }

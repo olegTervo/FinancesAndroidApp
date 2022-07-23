@@ -16,47 +16,29 @@ public class MyEasyTable extends TableLayout {
         super(context);
     }
 
-    public MyEasyTable(Context context, ArrayList<DailyGrowthDao> values, ArrayList<OperationDao> bankOperations, int id) {
+    public MyEasyTable(Context context, Object[] values, int id) {
         super(context);
         this.setId(id);
 
-        AddDailyRows(values);
-        addRow(new String[]{""});
+        AddRows(values);
+        /*addRow(new String[]{""});
         addRow(new String[]{"Bank Operations:"});
-        addRow(new String[]{""});
-        AddBankOperationsRows(bankOperations);
+        addRow(new String[]{""});*/
     }
 
-    private void AddBankOperationsRows(ArrayList<OperationDao> bankOperations) {
+    private void AddRows(Object[] values) {
         int n = 3;
         String[] toAdd = new String[n];
 
-        for(int i = 0; i < bankOperations.size(); i++) {
+        for(int i = 0; i < values.length; i++) {
             if(i % n == 0 && i > 0) {
                 addRow(toAdd);
                 toAdd = new String[n];
             }
-            toAdd[i%n] = bankOperations.get(i).toString();
+            toAdd[i%n] = values[i].toString();
         }
 
-        if(bankOperations.size() % n != 0)
-            addRow(toAdd);
-    }
-
-    private void AddDailyRows(ArrayList<DailyGrowthDao> values) {
-        int n = 3;
-        String[] toAdd = new String[n];
-
-        for(int i = 0; i < values.size(); i++) {
-            if(i % n == 0 && i > 0) {
-                addRow(toAdd);
-                toAdd = new String[n];
-            }
-            toAdd[i%n] = values.get(i).toString();
-        }
-
-        if(values.size() % n != 0)
-            addRow(toAdd);
+        addRow(toAdd);
     }
 
     public void addRow(String[] columns) {

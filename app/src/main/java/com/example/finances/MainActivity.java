@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
         int bank = AccountHelper.GetMoney(db, 1);
         VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
 
-        addRow(new String[] {"\t+: " + this.Balance,                 "\t\t- : " + this.Actives,                 "\t\t€ : " + bank}, valueTable);
-        addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target}, valueTable);
+        addRow(new String[] {"\t+: " + this.Balance,                          "\t\t- : " + this.Actives,                "\t\t€ : " + bank}, valueTable);
+        addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target,             "\t\t€+ : " + (this.Balance + bank)}, valueTable);
         addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome}, valueTable);
     }
 
