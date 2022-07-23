@@ -17,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.finances.Database.helpers.AccountHelper;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
@@ -139,9 +140,10 @@ public class MainActivity extends AppCompatActivity {
                 ? (int) DAYS.between(LocalDate.now(), LocalDate.now().withDayOfMonth(20))
                 : (int) DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(1).withDayOfMonth(20));
         this.Balance = DailyGrowthHelper.getTopValue(db) + this.DailyGrowth * daysToIncome;
+        int bank = AccountHelper.GetMoney(db, 1);
         VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
 
-        addRow(new String[] {"\t+: " + this.Balance,                          "\t\t- : " + this.Actives}, valueTable);
+        addRow(new String[] {"\t+: " + this.Balance,                 "\t\t- : " + this.Actives,                 "\t\t€ : " + bank}, valueTable);
         addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target}, valueTable);
         addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome}, valueTable);
     }

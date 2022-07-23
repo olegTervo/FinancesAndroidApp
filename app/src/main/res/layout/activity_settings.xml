@@ -6,59 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
-    <EditText
-        android:id="@+id/settingsIdToChange"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/id"
-        android:inputType="number"
-        android:textColorHint="#757575"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/settingsValueToChange"
-        android:layout_width="75dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/value"
-        android:inputType="numberSigned|number"
-        android:textColorHint="#757575"
-        app:layout_constraintStart_toEndOf="@+id/settingsIdToChange"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/submitById"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
-        android:backgroundTint="#01b636"
-        android:text="@string/submitButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/settingsValueToChange"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/submitDailyGrowth"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="24dp"
         android:backgroundTint="#01b636"
         android:text="@string/submitButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dailyGrowth"
-        app:layout_constraintTop_toBottomOf="@+id/submitById" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/submitTarget"
@@ -91,11 +50,12 @@
         android:layout_width="75dp"
         android:layout_height="50dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="100dp"
         android:ems="10"
+        android:hint="@string/value"
         android:inputType="number"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/settingsValueToChange" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/target"
@@ -104,7 +64,9 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:ems="10"
+        android:hint="@string/value"
         android:inputType="number"
+        android:textColorHint="#78909C"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/dailyGrowth" />
 
@@ -115,7 +77,9 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="32dp"
         android:ems="10"
+        android:hint="@string/value"
         android:inputType="number"
+        android:textColorHint="#78909C"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@+id/target" />
 
@@ -124,12 +88,12 @@
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="37dp"
+        android:layout_marginTop="110dp"
         android:text="Daily"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settingsIdToChange" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"

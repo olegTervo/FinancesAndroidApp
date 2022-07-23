@@ -6,6 +6,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.finances.Database.models.DailyGrowthDao;
+import com.example.finances.Database.models.OperationDao;
 
 import java.util.ArrayList;
 
@@ -15,10 +16,34 @@ public class MyEasyTable extends TableLayout {
         super(context);
     }
 
-    public MyEasyTable(Context context, ArrayList<DailyGrowthDao> values, int id) {
+    public MyEasyTable(Context context, ArrayList<DailyGrowthDao> values, ArrayList<OperationDao> bankOperations, int id) {
         super(context);
         this.setId(id);
 
+        AddDailyRows(values);
+        addRow(new String[]{""});
+        addRow(new String[]{"Bank Operations:"});
+        addRow(new String[]{""});
+        AddBankOperationsRows(bankOperations);
+    }
+
+    private void AddBankOperationsRows(ArrayList<OperationDao> bankOperations) {
+        int n = 3;
+        String[] toAdd = new String[n];
+
+        for(int i = 0; i < bankOperations.size(); i++) {
+            if(i % n == 0 && i > 0) {
+                addRow(toAdd);
+                toAdd = new String[n];
+            }
+            toAdd[i%n] = bankOperations.get(i).toString();
+        }
+
+        if(bankOperations.size() % n != 0)
+            addRow(toAdd);
+    }
+
+    private void AddDailyRows(ArrayList<DailyGrowthDao> values) {
         int n = 3;
         String[] toAdd = new String[n];
 

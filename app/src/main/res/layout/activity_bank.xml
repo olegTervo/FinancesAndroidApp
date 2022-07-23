@@ -7,11 +7,12 @@
     tools:context=".BankActivity">
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/BankMoney"
         android:layout_width="220dp"
         android:layout_height="95dp"
         android:layout_marginTop="100dp"
-        android:text="TextView"
+        android:text="100€"
+        android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +26,7 @@
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/BankMoney" />
 
     <Button
         android:id="@+id/TakeLoan"

@@ -54,36 +54,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setButtons() {
-        Button submit = findViewById(R.id.submitById);
         Button submitDailyGrowth = findViewById(R.id.submitDailyGrowth);
         Button submitTarget = findViewById(R.id.submitTarget);
         Button submitActives = findViewById(R.id.submitActives);
-
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TextView id = findViewById(R.id.settingsIdToChange);
-                TextView value = findViewById(R.id.settingsValueToChange);
-
-                String idText = id.getText().toString();
-                String valueText = value.getText().toString();
-
-                id.setText("");
-                value.setText("");
-
-                try {
-                    boolean added = DailyGrowthHelper.update(db, Integer.parseInt(idText), Integer.parseInt(valueText));
-
-                    if(!added)
-                        log(SettingsActivity.this, "Failed to insert into database, returned false");
-                    else
-                        log(SettingsActivity.this, "Saved successfully!");
-                }
-                catch (Exception e) {
-                    log(SettingsActivity.this, "Failed to insert into database" + e.getMessage());
-                }
-            }
-        });
 
         submitDailyGrowth.setOnClickListener(new View.OnClickListener() {
             @Override

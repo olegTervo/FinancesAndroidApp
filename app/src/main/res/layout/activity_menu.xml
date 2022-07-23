@@ -3,14 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:backgroundTint="#B3541E">
 
     <Button
         android:id="@+id/button8"
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="520dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toEndOf="@+id/Database"
@@ -22,7 +25,9 @@
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="520dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,7 +36,9 @@
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="240dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toEndOf="@+id/Database"
@@ -43,7 +50,9 @@
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="240dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,7 +61,9 @@
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="380dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toEndOf="@+id/Database"
@@ -64,7 +75,9 @@
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="380dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Button"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -74,7 +87,9 @@
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="100dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Database"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,7 +98,9 @@
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="100dp"
+        android:backgroundTint="#EEEEEE"
         android:text="Bank"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/Database"
         app:layout_constraintTop_toTopOf="parent" />

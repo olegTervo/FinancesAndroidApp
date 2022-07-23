@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,8 +16,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.helpers.OperationHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
 import com.example.finances.Database.models.DailyGrowthDao;
+import com.example.finances.Database.models.OperationDao;
 import com.example.finances.enums.VariableType;
 import com.example.finances.views.MyEasyTable;
 
@@ -29,6 +32,7 @@ public class DatabaseActivity extends AppCompatActivity {
 
     private MyEasyTable DataTable;
     private ArrayList<DailyGrowthDao> Values;
+    private ArrayList<OperationDao> BankOperations;
 
     public DatabaseActivity() {
         this.db = new DatabaseHelper(this);
@@ -50,6 +54,7 @@ public class DatabaseActivity extends AppCompatActivity {
 
         DailyGrowthHelper.sync(db);
         this.Values = DailyGrowthHelper.getValues(db);
+        this.BankOperations = OperationHelper.GetAccountOperations(db, 1);
     }
 
     private void setData() {
@@ -59,12 +64,13 @@ public class DatabaseActivity extends AppCompatActivity {
         if(TableView.getViewById(tableId) != null)
             TableView.removeView(findViewById(tableId));
 
-        this.DataTable = new MyEasyTable(this, this.Values, tableId);
+        this.DataTable = new MyEasyTable(this, this.Values, this.BankOperations, tableId);
         TableView.addView(this.DataTable);
     }
 
     private void setButtons() {
         Button empty = findViewById(R.id.emptyButton);
+        Button submit = findViewById(R.id.submitById);
 
         empty.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +94,32 @@ public class DatabaseActivity extends AppCompatActivity {
                 }
                 catch (Exception e) {
                     log(DatabaseActivity.this, "Failed to clear database" + e.getMessage());
+                }
+            }
+        });
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView id = findViewById(R.id.settingsIdToChange);
+                TextView value = findViewById(R.id.settingsValueToChange);
+
+                String idText = id.getText().toString();
+                String valueText = value.getText().toString();
+
+                id.setText("");
+                value.setText("");
+
+                try {
+                    boolean added = DailyGrowthHelper.update(db, Integer.parseInt(idText), Integer.parseInt(valueText));
+
+                    if(!added)
+                        log(DatabaseActivity.this, "Failed to insert into database, returned false");
+                    else
+                        log(DatabaseActivity.this, "Saved successfully!");
+                }
+                catch (Exception e) {
+                    log(DatabaseActivity.this, "Failed to insert into database" + e.getMessage());
                 }
             }
         });
