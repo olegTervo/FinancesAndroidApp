@@ -13,8 +13,14 @@ public class InvestmentHelper {
                 + " (" + INVESTMENT_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + INVESTMENT_TABLE_PURE_INVESTMENT_COLUMN_NAME + " INTEGER NOT NULL, "
                 + INVESTMENT_TABLE_CURRENT_PRICE_COLUMN_NAME +" INTEGER NOT NULL, "
-                + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME +" TIMESTAMP DEFAULT CURRENT_TIMESTAMP );\n";
+                + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME +" TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                + ");\n";
 
         return initialString;
+    }
+
+    public static String DropTableString() {
+        String res = "DROP TABLE " + INVESTMENT_TABLE_NAME + ";\n";
+        return res;
     }
 }

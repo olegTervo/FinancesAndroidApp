@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Finances">
         <activity
+            android:name=".EventsActivity"
+            android:exported="false" />
+        <activity
             android:name=".BankActivity"
             android:exported="false" />
         <activity

@@ -18,9 +18,15 @@ public class AccountHelper {
                 + " (" + ACCOUNT_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ACCOUNT_TABLE_TYPE_COLUMN_NAME + " INTEGER NOT NULL, "
                 + ACCOUNT_TABLE_NAME_COLUMN_NAME +" VARCHAR(1024) NOT NULL, "
-                + ACCOUNT_TABLE_MONEY_COLUMN_NAME +" INTEGER NOT NULL );\n";
+                + ACCOUNT_TABLE_MONEY_COLUMN_NAME +" INTEGER NOT NULL"
+                + ");\n";
 
         return initialString;
+    }
+
+    public static String DropTableString() {
+        String res = "DROP TABLE " + ACCOUNT_TABLE_NAME + ";\n";
+        return res;
     }
 
     public static void Initialize(DatabaseHelper connection) {

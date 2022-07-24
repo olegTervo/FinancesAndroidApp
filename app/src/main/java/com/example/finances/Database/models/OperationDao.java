@@ -19,6 +19,22 @@ public class OperationDao {
 
     @Override
     public String toString() {
-        return "id:" + id + "|" + amount + "€|" + creationDate.getDayOfMonth() + "th";
+        String idTabs = "";
+        for(int i = String.valueOf(id).length(); i < 4; i++ ) {
+            idTabs += "\t";
+        }
+        String typeTabs = "";
+        for(int i = String.valueOf(type).length(); i < 2; i++ ) {
+            typeTabs += "\t";
+        }
+        String amountTabs = "";
+        for(int i = String.valueOf(amount).length(); i < 5; i++ ) {
+            amountTabs += "\t";
+        }
+
+        return "id:" + id + idTabs + "|"
+                + "type:" + type + typeTabs + "|"
+                + amount + "€" + amountTabs + "|"
+                + creationDate.toString() + "\t|" + comment;
     }
 }

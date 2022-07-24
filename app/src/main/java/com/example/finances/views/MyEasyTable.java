@@ -11,31 +11,28 @@ import com.example.finances.Database.models.OperationDao;
 import java.util.ArrayList;
 
 public class MyEasyTable extends TableLayout {
+    private int n;
 
     public MyEasyTable(Context context) {
         super(context);
     }
 
-    public MyEasyTable(Context context, Object[] values, int id) {
+    public MyEasyTable(Context context, Object[] values, int id, int n) {
         super(context);
         this.setId(id);
-
+        this.n = n;
         AddRows(values);
-        /*addRow(new String[]{""});
-        addRow(new String[]{"Bank Operations:"});
-        addRow(new String[]{""});*/
     }
 
     private void AddRows(Object[] values) {
-        int n = 3;
-        String[] toAdd = new String[n];
+        String[] toAdd = new String[this.n];
 
         for(int i = 0; i < values.length; i++) {
-            if(i % n == 0 && i > 0) {
+            if(i % this.n == 0 && i > 0) {
                 addRow(toAdd);
-                toAdd = new String[n];
+                toAdd = new String[this.n];
             }
-            toAdd[i%n] = values[i].toString();
+            toAdd[i%this.n] = values[i].toString();
         }
 
         addRow(toAdd);

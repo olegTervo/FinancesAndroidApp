@@ -65,13 +65,13 @@ public class DatabaseActivity extends AppCompatActivity {
         if(BankOperationsTableView.getViewById(tableId) != null)
             BankOperationsTableView.removeView(findViewById(tableId));
 
-        this.DataTable.add(new MyEasyTable(this, this.BankOperations.toArray(), tableId));
+        this.DataTable.add(new MyEasyTable(this, this.BankOperations.toArray(), tableId, 1));
         BankOperationsTableView.addView(this.DataTable.get(0));
 
         if(DailyGrowthTableView.getViewById(tableId+1) != null)
             DailyGrowthTableView.removeView(findViewById(tableId+1));
 
-        this.DataTable.add(new MyEasyTable(this, this.Values.toArray(), tableId+1));
+        this.DataTable.add(new MyEasyTable(this, this.Values.toArray(), tableId+1, 3));
         DailyGrowthTableView.addView(this.DataTable.get(1));
     }
 

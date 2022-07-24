@@ -27,6 +27,7 @@ public class MenuActivity extends AppCompatActivity {
     private void setButtons() {
         Button database = findViewById(R.id.Database);
         Button bank = findViewById(R.id.Bank);
+        Button events = findViewById(R.id.Events);
 
         database.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,6 +41,14 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, BankActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        events.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, EventsActivity.class);
                 startActivity(intent);
             }
         });

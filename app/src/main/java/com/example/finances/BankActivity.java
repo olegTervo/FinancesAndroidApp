@@ -6,7 +6,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +48,7 @@ public class BankActivity extends AppCompatActivity {
             AccountHelper.Initialize(db);
 
         this.BankMoney = AccountHelper.GetMoney(db, 1);
-        this.Loans = LoanHelper.GetLoans(db);
+        this.Loans = LoanHelper.GetUnpaidLoans(db);
     }
 
     private void setData() {
@@ -62,7 +61,7 @@ public class BankActivity extends AppCompatActivity {
         if(TableView.getViewById(tableId) != null)
             TableView.removeView(findViewById(tableId));
 
-        this.DataTable = new MyEasyTable(this, this.Loans.toArray(), tableId);
+        this.DataTable = new MyEasyTable(this, this.Loans.toArray(), tableId, 3);
         this.DataTable.addRow(new String[] {"Loans: " + this.Loans.size()});
         TableView.addView(this.DataTable);
     }

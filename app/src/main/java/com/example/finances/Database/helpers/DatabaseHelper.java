@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "finances.db", null, 4);
+        super(context, "finances.db", null, 7);
     }
 
     @Override
@@ -46,6 +46,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else if (newVersion == 4 && oldVersion != 4) {
             db.execSQL(OperationHelper.DropTableString());
             db.execSQL(OperationHelper.CreateTableString());
+        }
+
+        else if ( newVersion == 7 && oldVersion != 7){
+            db.execSQL(RelationsHelper.DropLoanOperationsTableString());
+            db.execSQL(RelationsHelper.DropInvestmentOperationsTableString());
+            db.execSQL(RelationsHelper.DropAccountOperationsTableString());
+
+            db.execSQL(AccountHelper.DropTableString());
+            db.execSQL(AccountHelper.CreateTableString());
+            db.execSQL(InvestmentHelper.DropTableString());
+            db.execSQL(InvestmentHelper.CreateTableString());
+            db.execSQL(LoanHelper.DropTableString());
+            db.execSQL(LoanHelper.CreateTableString());
+            db.execSQL(OperationHelper.DropTableString());
+            db.execSQL(OperationHelper.CreateTableString());
+
+            db.execSQL(RelationsHelper.CreateAccountOperationsTableString());
+            db.execSQL(RelationsHelper.CreateLoanOperationsTableString());
+            db.execSQL(RelationsHelper.CreateInvestmentOperationsTableString());
         }
     }
 }

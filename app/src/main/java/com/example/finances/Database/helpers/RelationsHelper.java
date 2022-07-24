@@ -1,5 +1,14 @@
 package com.example.finances.Database.helpers;
 
+import static com.example.finances.Database.helpers.AccountHelper.ACCOUNT_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.AccountHelper.ACCOUNT_TABLE_NAME;
+import static com.example.finances.Database.helpers.InvestmentHelper.INVESTMENT_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.InvestmentHelper.INVESTMENT_TABLE_NAME;
+import static com.example.finances.Database.helpers.LoanHelper.LOAN_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.LoanHelper.LOAN_TABLE_NAME;
+import static com.example.finances.Database.helpers.OperationHelper.OPERATION_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.OperationHelper.OPERATION_TABLE_NAME;
+
 public class RelationsHelper {
     public static final String LOAN_OPERATIONS_TABLE_NAME = "LoanOperations";
     public static final String LOAN_OPERATIONS_ID_COLUMN_NAME = "Id";
@@ -31,7 +40,14 @@ public class RelationsHelper {
                 + LOAN_OPERATIONS_TABLE_NAME
                 + " (" + LOAN_OPERATIONS_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + LOAN_OPERATIONS_LOAN_ID_COLUMN_NAME + " INTEGER NOT NULL, "
-                + LOAN_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL );\n";
+                + LOAN_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+
+                + "CONSTRAINT loan_operations_loan_fk FOREIGN KEY (" + LOAN_OPERATIONS_LOAN_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + LOAN_TABLE_NAME + "(" + LOAN_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT loan_operations_operation_fk FOREIGN KEY (" + LOAN_OPERATIONS_OPERATION_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + OPERATION_TABLE_NAME + "(" + OPERATION_ID_COLUMN_NAME + ")"
+                + ");\n";
 
         return initialString;
     }
@@ -41,7 +57,14 @@ public class RelationsHelper {
                 + INVESTMENT_OPERATIONS_TABLE_NAME
                 + " (" + INVESTMENT_OPERATIONS_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + INVESTMENT_OPERATIONS_INVESTMENT_ID_COLUMN_NAME + " INTEGER NOT NULL, "
-                + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL );\n";
+                + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+
+                + "CONSTRAINT investment_operations_investment_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_INVESTMENT_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + INVESTMENT_TABLE_NAME + "(" + INVESTMENT_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT investment_operations_operation_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + OPERATION_TABLE_NAME + "(" + OPERATION_ID_COLUMN_NAME + ")"
+                + ");\n";
 
         return initialString;
     }
@@ -51,8 +74,30 @@ public class RelationsHelper {
                 + ACCOUNT_OPERATIONS_TABLE_NAME
                 + " (" + ACCOUNT_OPERATIONS_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + ACCOUNT_OPERATIONS_ACCOUNT_ID_COLUMN_NAME + " INTEGER NOT NULL, "
-                + ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL );\n";
+                + ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+
+                + "CONSTRAINT account_operations_account_fk FOREIGN KEY (" + ACCOUNT_OPERATIONS_ACCOUNT_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + ACCOUNT_TABLE_NAME + "(" + ACCOUNT_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT account_operations_operations_fk FOREIGN KEY (" + ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + OPERATION_TABLE_NAME + "(" + OPERATION_ID_COLUMN_NAME + ")"
+                + ");\n";
 
         return initialString;
+    }
+
+    public static String DropLoanOperationsTableString() {
+        String res = "DROP TABLE " + LOAN_OPERATIONS_TABLE_NAME + ";\n";
+        return res;
+    }
+
+    public static String DropInvestmentOperationsTableString() {
+        String res = "DROP TABLE " + INVESTMENT_OPERATIONS_TABLE_NAME + ";\n";
+        return res;
+    }
+
+    public static String DropAccountOperationsTableString() {
+        String res = "DROP TABLE " + ACCOUNT_OPERATIONS_TABLE_NAME + ";\n";
+        return res;
     }
 }

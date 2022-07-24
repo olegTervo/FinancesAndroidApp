@@ -37,7 +37,7 @@
         android:layout_height="86dp"
         android:layout_marginTop="240dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="Accounts"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -45,13 +45,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/Events"
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="240dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="Events"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +62,7 @@
         android:layout_height="86dp"
         android:layout_marginTop="380dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="Log"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -76,7 +76,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="380dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="Statistic"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
