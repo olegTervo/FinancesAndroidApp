@@ -8,6 +8,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +29,10 @@ import com.example.finances.views.LinearGraph;
 import com.example.finances.views.MyEasyTable;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseHelper db;
@@ -117,13 +122,84 @@ public class MainActivity extends AppCompatActivity {
 
         DailyGrowthHelper.sync(db);
         ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
+
+        if(values.size() > 30) values = new ArrayList<>(values.subList(0, 30));
+
         int target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target)) - VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
         LinearGraph graph = new LinearGraph(this, values, graphId, target);
+        SetListeners(graph);
 
         if(GraphView.getViewById(graphId) != null)
             GraphView.removeView(findViewById(graphId));
 
         GraphView.addView(graph);
+    }
+
+    public void drawGraph(float x, float y) {
+        int graphId = 1100009;
+        ConstraintLayout GraphView = findViewById(R.id.graph);
+
+        DailyGrowthHelper.sync(db);
+        ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
+
+        int daysMove = -Math.round(x/30);
+        if(daysMove > 100) daysMove = 100;
+        if(daysMove < -100) daysMove = -100;
+
+        int valueChange = Math.round(y);
+        if(valueChange > 1000) valueChange = 1000;
+        if(valueChange < -1000) valueChange = -1000;
+        final int valueMove = valueChange;
+
+        TextView output = findViewById(R.id.Output);
+        output.setText("d:" + daysMove + "; v:" + valueChange);
+
+        int startIndex = Math.min(daysMove, values.size() - 1);
+        startIndex = Math.max(startIndex, 0);
+        int endIndex = Math.min(daysMove + 30, values.size() - 1);
+        endIndex = Math.max(endIndex, 0);
+
+        values = new ArrayList<>(values.subList(startIndex, endIndex));
+        values.forEach(v -> v.value += valueMove);
+
+        int target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target)) - VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+        LinearGraph graph = new LinearGraph(this, values, graphId, target, x, y);
+        SetListeners(graph);
+
+        if(GraphView.getViewById(graphId) != null)
+            GraphView.removeView(findViewById(graphId));
+
+        GraphView.addView(graph);
+    }
+
+    private void SetListeners(LinearGraph graph) {
+        graph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView output = findViewById(R.id.Output);
+                output.setText("clicked!" + LocalTime.now());
+            }
+        });
+
+        graph.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                float x = event.getX();
+                float y = event.getY();
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        ((LinearGraph) view).setDragPoints(x, y);
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        drawGraph(((LinearGraph) view).currentX - x, ((LinearGraph) view).currentY - y);
+                        return true;
+                }
+
+                return true;
+            }
+        });
     }
 
     private void getData() {

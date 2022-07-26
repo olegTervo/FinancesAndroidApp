@@ -109,7 +109,7 @@ public class DailyGrowthHelper{
                 + FINANCES_TABLE_DATE_COLUMN_NAME
                 + " FROM " + FINANCES_TABLE_NAME
                 + " ORDER BY " + ID_COLUMN_NAME
-                + " DESC LIMIT 30";
+                + " DESC LIMIT 1000";
 
         Cursor reader = db.rawQuery(getScript, null);
 

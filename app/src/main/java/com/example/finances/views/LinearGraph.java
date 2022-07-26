@@ -9,7 +9,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
@@ -25,49 +27,115 @@ import java.util.List;
 public class LinearGraph extends View {
     private List<GraphPoint> points;
     private List<DailyGrowthDao> values;
+
     private int target;
+
+    private int width;
+    private int height = 400;
+
+    public float currentX;
+    public float currentY;
+
+    private Canvas canvas;
 
     public LinearGraph(Context context, ArrayList<DailyGrowthDao> values, int id, int target) {
         super(context);
+        this.setId(id);
+        values = new ArrayList<>(values.subList(0, 25));
         Collections.reverse(values);
         this.values = values;
-        this.setId(id);
         this.target = target;
+        this.currentX = 150;
+        this.currentY = 0;
+    }
+
+    public LinearGraph(Context context, ArrayList<DailyGrowthDao> values, int id, int target, float x, float y) {
+        super(context);
+        this.setId(id);
+
+        Collections.reverse(values);
+        this.values = values;
+        this.target = target;
+        this.currentX = x;
+        this.currentY = y;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        this.points = new ArrayList<GraphPoint>();
-        setPoints(this.points, this.values, 400, this.getWidth());
 
+        this.canvas = canvas;
+        this.width = this.getWidth();
+        this.points = new ArrayList<GraphPoint>();
+        Paint monthPaint = getMonthPaint(this.getContext());
+
+        setPoints(this.points, this.values, this.height, this.width);
+        drawBackground(this.canvas, this.width, this.height, this.currentX, this.currentY);
+        drawHorizontalLine(this.canvas, getTargetPaint(this.getContext()), this.width, this.height-this.target-Math.round(this.currentY));
+
+        if(this.values.size() > 0)
+            drawEndOfMonth(this.canvas, monthPaint, this.values.get(0).date, this.width, this.height);
+
+        this.canvas.drawPath(getGraphLine(this.points), getGraphPaint(this.getContext()));
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                return true;
+
+            case MotionEvent.ACTION_UP:
+                performClick();
+                return true;
+        }
+        return false;
+    }
+
+    // Because we call this from onTouchEvent, this code will be executed for both
+    // normal touch events and for when the system calls this using Accessibility
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        return true;
+    }
+
+    public void setDragPoints(float x, float y) {
+        this.currentX += x;
+        this.currentY += y;
+    }
+
+    private static void drawEndOfMonth(Canvas canvas, Paint monthPaint, LocalDate firstDate, int width, int height) {
+        LocalDate nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
+        long days = DAYS.between(firstDate, nextMonthFirst)+1;
+        drawVerticalLine(canvas, monthPaint, height, Math.round(width/30*days));
+    }
+
+    private static void drawBackground(Canvas canvas, int width, int height, float currentX, float currentY) {
         Paint defaultPaint = getDefaultPaint();
         Paint thinPaint = getThinPaint();
 
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 100);
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 200);
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 300);
-        drawHorizontalLine(canvas, defaultPaint, this.getWidth(), 400);
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 500);
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 600);
-        drawHorizontalLine(canvas, thinPaint, this.getWidth(), 700);
+        int y = Math.round(currentY);
 
-        drawVerticalLine(canvas, defaultPaint, 400, 0);
-        for(int i = 0; i <= 30; i+=5) {
-            drawVerticalLine(canvas, thinPaint, 400, Math.round(this.getWidth()/30*i));
+        drawHorizontalLine(canvas, thinPaint, width, 0 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 100 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 200 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 300 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 400 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 500 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 600 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 700 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 800 - y%100);
+        drawHorizontalLine(canvas, defaultPaint, width, 400 - y);
+
+        for(int i = 0; i <= 35; i+=5) {
+            drawVerticalLine(canvas, thinPaint, height+400, Math.round(width/30*(i - Math.round(currentX/30)%5)));
         }
-
-        LocalDate firstDate = this.values.get(0).date;
-        LocalDate nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
-        long days = DAYS.between(firstDate, nextMonthFirst)+1;
-        drawVerticalLine(canvas, getMonthPaint(this.getContext()), 400, Math.round(this.getWidth()/30*days));
-
-        drawHorizontalLine(canvas, getTargetPaint(this.getContext()), this.getWidth(), 400-this.target);
-
-        canvas.drawPath(getGraphLine(this.points), getGraphPaint(this.getContext()));
     }
 
-    private void drawVerticalLine(Canvas canvas, Paint paint, int height, int x) {
+    private static void drawVerticalLine(Canvas canvas, Paint paint, int height, int x) {
         Path line = getVerticalLine(height, x);
         canvas.drawPath(line, paint);
     }
@@ -152,7 +220,7 @@ public class LinearGraph extends View {
 
     private static Path getVerticalLine(int height, int x) {
         Path path = new Path();
-        int margin = 80;
+        int margin = 0;
         int length = (height - margin) * 2;
 
         path.moveTo(x, margin);
@@ -164,7 +232,7 @@ public class LinearGraph extends View {
     private static void setPoints(List<GraphPoint> points, List<DailyGrowthDao> values, int height, int width) {
         int max = height;
         int min = -height;
-        float stepX = width/30;
+        float stepX = width/28;
 
         int i = 0;
 
