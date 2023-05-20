@@ -48,8 +48,6 @@ public class VariablesHelper {
             createVariable(connection, type);
 
         reader.close();
-        db.close();
-
         return result;
     }
 

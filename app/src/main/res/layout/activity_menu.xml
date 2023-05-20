@@ -20,13 +20,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/Shop"
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="520dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="@string/shop"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

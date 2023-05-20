@@ -104,8 +104,6 @@ public class OperationHelper {
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
-
         return result;
     }
 
@@ -146,8 +144,6 @@ public class OperationHelper {
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
-
         return result;
     }
 
@@ -185,8 +181,6 @@ public class OperationHelper {
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
-
         return result;
     }
 }

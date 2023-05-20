@@ -10,6 +10,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Finances">
         <activity
+            android:name=".AddItemActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".FullPriceShopActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".EventsActivity"
             android:exported="false" />
         <activity

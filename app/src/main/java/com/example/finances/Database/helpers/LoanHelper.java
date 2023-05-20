@@ -122,7 +122,6 @@ public class LoanHelper {
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
 
         for(Loan loan : result)
             loan.addOperations(OperationHelper.GetLoanOperations(connection, loan.id));
@@ -159,8 +158,6 @@ public class LoanHelper {
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
-
         return result;
     }
 
@@ -189,8 +186,6 @@ public class LoanHelper {
             result = reader.getInt(0);
 
         reader.close();
-        db.close();
-
         return result;
     }
 

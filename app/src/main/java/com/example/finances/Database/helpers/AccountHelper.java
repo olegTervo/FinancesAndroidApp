@@ -34,12 +34,29 @@ public class AccountHelper {
     }
 
     public static boolean AccountExists(DatabaseHelper connection, int account) {
+        boolean res = false;
         SQLiteDatabase db = connection.getReadableDatabase();
 
         String getScript = String.format("SELECT " + ACCOUNT_ID_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + ACCOUNT_ID_COLUMN_NAME + " = %s", account);
         Cursor reader = db.rawQuery(getScript, null);
+        res = reader.moveToFirst();
 
-        return reader.moveToFirst();
+        reader.close();
+        return res;
+    }
+
+    public static int GetAccountNumber(DatabaseHelper connection, String name) {
+        int res = -1;
+        SQLiteDatabase db = connection.getReadableDatabase();
+
+        String getScript = String.format("SELECT " + ACCOUNT_ID_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + ACCOUNT_TABLE_NAME_COLUMN_NAME + " = '%s'", name);
+        Cursor reader = db.rawQuery(getScript, null);
+
+        if(reader.moveToFirst())
+            res = reader.getInt(0);
+
+        reader.close();
+        return res;
     }
 
     public static boolean OpenBankAccount(DatabaseHelper connection, String name, int type) {
@@ -68,8 +85,6 @@ public class AccountHelper {
             result = reader.getInt(0);
 
         reader.close();
-        db.close();
-
         return result;
     }
 

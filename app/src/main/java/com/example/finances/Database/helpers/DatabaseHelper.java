@@ -8,8 +8,11 @@ import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    private boolean updating = false;
+    private SQLiteDatabase updatingDB = null;
+
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "finances.db", null, 7);
+        super(context, "finances.db", null, 8);
     }
 
     @Override
@@ -66,5 +69,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(RelationsHelper.CreateLoanOperationsTableString());
             db.execSQL(RelationsHelper.CreateInvestmentOperationsTableString());
         }
+
+        else if ( newVersion == 8 && oldVersion != 8){
+            this.updating = true;
+            this.updatingDB = db;
+            db.execSQL(ShopHelper.CreateTableString());
+            db.execSQL(ShopItemHelper.CreateTableString());
+            db.execSQL(PriceHelper.CreateTableString());
+
+            ShopHelper.Initialize(this);
+            this.updating = false;
+            this.updatingDB = null;
+        }
+    }
+
+    @Override
+    public SQLiteDatabase getWritableDatabase() {
+        if(updating && updatingDB != null)
+            return updatingDB;
+        return super.getWritableDatabase();
+    }
+
+    @Override
+    public SQLiteDatabase getReadableDatabase() {
+        if(updating && updatingDB != null)
+            return updatingDB;
+        return super.getReadableDatabase();
     }
 }

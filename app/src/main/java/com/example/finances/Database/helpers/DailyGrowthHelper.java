@@ -65,8 +65,6 @@ public class DailyGrowthHelper{
             );
 
         reader.close();
-        db.close();
-
         return result;
     }
 
@@ -76,9 +74,8 @@ public class DailyGrowthHelper{
         Cursor reader = db.rawQuery(getScript, null);
 
         boolean result = reader.moveToFirst();
-        reader.close();
-        db.close();
 
+        reader.close();
         return result;
     }
 
@@ -125,9 +122,7 @@ public class DailyGrowthHelper{
             } while (reader.moveToNext());
 
         reader.close();
-        db.close();
-
-        return  result;
+        return result;
     }
 
     public static int getTopValue(DatabaseHelper connection) {
@@ -142,8 +137,6 @@ public class DailyGrowthHelper{
             result = reader.getInt(0);
 
         reader.close();
-        db.close();
-
         return result;
     }
 
@@ -176,8 +169,6 @@ public class DailyGrowthHelper{
             result = reader.getInt(0);
 
         reader.close();
-        db.close();
-
         return result;
     }
 
