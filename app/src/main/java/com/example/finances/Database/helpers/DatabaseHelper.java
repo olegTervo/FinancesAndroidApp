@@ -12,7 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private SQLiteDatabase updatingDB = null;
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context, "finances.db", null, 8);
+        super(context, "finances.db", null, 9);
     }
 
     @Override
@@ -78,6 +78,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(PriceHelper.CreateTableString());
 
             ShopHelper.Initialize(this);
+            this.updating = false;
+            this.updatingDB = null;
+        }
+
+        else if ( newVersion == 9 && oldVersion != 9){
+            this.updating = true;
+            this.updatingDB = db;
+            db.execSQL(PriceHelper.DropTableString());
+            db.execSQL(PriceHelper.CreateTableString());
             this.updating = false;
             this.updatingDB = null;
         }

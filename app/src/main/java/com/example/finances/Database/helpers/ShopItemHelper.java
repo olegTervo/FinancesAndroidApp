@@ -1,6 +1,7 @@
 package com.example.finances.Database.helpers;
 
 import static com.example.finances.Database.helpers.PriceHelper.CreateShopItemPrice;
+import static com.example.finances.Database.helpers.PriceHelper.DeleteItemPrices;
 import static com.example.finances.Database.helpers.PriceHelper.GetShopItemPrice;
 import static com.example.finances.Database.helpers.ShopHelper.SHOP_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.ShopHelper.SHOP_TABLE_NAME;
@@ -10,10 +11,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.finances.Database.models.ShopItemDao;
+import com.example.finances.enums.ItemType;
 import com.example.finances.enums.ShopItemPriceType;
-import com.example.finances.models.Loan;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class ShopItemHelper {
@@ -49,7 +49,7 @@ public class ShopItemHelper {
         int res = -1;
         SQLiteDatabase db = connection.getReadableDatabase();
 
-        String getScript = String.format("SELECT " + SHOP_ITEM_ID_COLUMN_NAME + " FROM " + SHOP_ITEM_TABLE_NAME + " WHERE " + SHOP_ITEM_TABLE_NAME_COLUMN_NAME + " = %s", name);
+        String getScript = String.format("SELECT " + SHOP_ITEM_ID_COLUMN_NAME + " FROM " + SHOP_ITEM_TABLE_NAME + " WHERE " + SHOP_ITEM_TABLE_NAME_COLUMN_NAME + " = '%s'", name);
         Cursor reader = db.rawQuery(getScript, null);
 
         if(reader.moveToFirst())
@@ -101,7 +101,7 @@ public class ShopItemHelper {
 
         cv.put(SHOP_ITEM_TABLE_NAME_COLUMN_NAME, name);
         cv.put(SHOP_ITEM_TABLE_SHOP_COLUMN_NAME, shopId);
-        res = db.insert(SHOP_TABLE_NAME, null, cv);
+        res = db.insert(SHOP_ITEM_TABLE_NAME, null, cv);
 
         if (res == -1) {
             return false;
@@ -113,7 +113,7 @@ public class ShopItemHelper {
         int result = 0;
         SQLiteDatabase db = connection.getReadableDatabase();
 
-        String getScript = String.format("SELECT " + SHOP_ITEM_TABLE_AMOUNT_COLUMN_NAME + " FROM " + SHOP_TABLE_NAME + " WHERE " + SHOP_ITEM_ID_COLUMN_NAME + " = %s", id);
+        String getScript = String.format("SELECT " + SHOP_ITEM_TABLE_AMOUNT_COLUMN_NAME + " FROM " + SHOP_ITEM_TABLE_NAME + " WHERE " + SHOP_ITEM_ID_COLUMN_NAME + " = %s", id);
         Cursor reader = db.rawQuery(getScript, null);
 
         if (reader.moveToFirst())
@@ -131,7 +131,21 @@ public class ShopItemHelper {
         ContentValues cv = new ContentValues();
 
         cv.put(SHOP_ITEM_TABLE_AMOUNT_COLUMN_NAME, current+amount);
-        res = db.update(SHOP_TABLE_NAME, cv, "id=?", new String[] { Integer.toString(id) });
+        res = db.update(SHOP_ITEM_TABLE_NAME, cv, SHOP_ITEM_ID_COLUMN_NAME + "=?", new String[] { Integer.toString(id) });
+
+        if (res == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean DeleteItem(DatabaseHelper connection, int id) {
+        long res = -1;
+
+        if(DeleteItemPrices(connection, id, ItemType.ShopItem)) {
+            SQLiteDatabase db = connection.getWritableDatabase();
+            res = db.delete(SHOP_ITEM_TABLE_NAME, SHOP_ITEM_ID_COLUMN_NAME + "=?", new String[] { Integer.toString(id) });
+        }
 
         if (res == -1) {
             return false;

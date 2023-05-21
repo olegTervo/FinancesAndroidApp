@@ -47,7 +47,7 @@ public class AddItemActivity extends AppCompatActivity {
                     boolean changed = CreateItem(db, name.getText().toString(), GetShopId(db, "FullPriceShop"), Double.parseDouble(buyPrice.getText().toString()), Double.parseDouble(sellPrice.getText().toString()));
 
                     if(!changed)
-                        log(AddItemActivity.this, "Failed to change Variable, returned false");
+                        log(AddItemActivity.this, "Failed to create item, returned false");
                     else
                         log(AddItemActivity.this, "Saved successfully!");
                 }

@@ -1,5 +1,7 @@
 package com.example.finances.Database.helpers;
 
+import static com.example.finances.Database.helpers.ShopHelper.SHOP_TABLE_NAME;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,7 +25,7 @@ public class PriceHelper {
                 + PRICE_TABLE_TYPE_COLUMN_NAME + " INTEGER NOT NULL, "
                 + PRICE_TABLE_PRICE_COLUMN_NAME +" FLOAT NOT NULL, "
 
-                + "PRIMARY KEY (" + PRICE_TABLE_ITEM_COLUMN_NAME + ", " + PRICE_TABLE_ITEM_TYPE_COLUMN_NAME + ")"
+                + "PRIMARY KEY (" + PRICE_TABLE_ITEM_COLUMN_NAME + ", " + PRICE_TABLE_ITEM_TYPE_COLUMN_NAME + ", " + PRICE_TABLE_TYPE_COLUMN_NAME + ")"
 
                 + ");\n";
 
@@ -47,7 +49,7 @@ public class PriceHelper {
                 " WHERE " + PRICE_TABLE_ITEM_COLUMN_NAME + " = %s AND " +
                 PRICE_TABLE_ITEM_TYPE_COLUMN_NAME + " = %s AND " +
                 PRICE_TABLE_TYPE_COLUMN_NAME + " = %s " +
-                "LIMIT 1", itemId, itemType, priceType);
+                "LIMIT 1", itemId, ItemType.toInt(itemType), priceType);
         Cursor reader = db.rawQuery(getScript, null);
 
         if (reader.moveToFirst())
@@ -77,6 +79,23 @@ public class PriceHelper {
         cv.put(PRICE_TABLE_TYPE_COLUMN_NAME, priceType);
         cv.put(PRICE_TABLE_PRICE_COLUMN_NAME, price);
         long res = db.insert(PRICE_TABLE_NAME, null, cv);
+
+        if (res == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean DeleteItemPrices(DatabaseHelper connection, int itemId, ItemType itemType){
+        long res = -1;
+
+        SQLiteDatabase db = connection.getWritableDatabase();
+
+        res = db.delete(
+                PRICE_TABLE_NAME
+                , PRICE_TABLE_ITEM_COLUMN_NAME + "=? AND " + PRICE_TABLE_ITEM_TYPE_COLUMN_NAME + "=?"
+                , new String[] { Integer.toString(itemId), Integer.toString(ItemType.toInt(itemType)) }
+        );
 
         if (res == -1) {
             return false;
