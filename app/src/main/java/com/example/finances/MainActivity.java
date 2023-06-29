@@ -1,5 +1,6 @@
 package com.example.finances;
 
+import static com.example.finances.FullPriceShopActivity.FullPriceShopName;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.example.finances.Database.helpers.AccountHelper;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.helpers.ShopHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
 import com.example.finances.Database.models.DailyGrowthDao;
 import com.example.finances.enums.VariableType;
@@ -217,11 +219,12 @@ public class MainActivity extends AppCompatActivity {
                 : (int) DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(1).withDayOfMonth(20));
         this.Balance = DailyGrowthHelper.getTopValue(db) + this.DailyGrowth * daysToIncome;
         int bank = AccountHelper.GetMoney(db, 1);
+        int shop = AccountHelper.GetMoney(db,  ShopHelper.GetShopAccountNumber(db, FullPriceShopName));
         VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
 
         addRow(new String[] {"\t+: " + this.Balance,                          "\t\t- : " + this.Actives,                "\t\t€ : " + bank}, valueTable);
         addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target,             "\t\t€+ : " + (this.Balance + bank)}, valueTable);
-        addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome}, valueTable);
+        addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome,         "\t\t$€+ : " + (this.Balance + bank + shop)}, valueTable);
     }
 
     private void addRow(String[] columns, TableLayout table) {

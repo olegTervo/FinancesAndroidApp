@@ -18,7 +18,6 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,7 +30,7 @@ import com.example.finances.Database.models.ShopItemDao;
 import java.util.ArrayList;
 
 public class FullPriceShopActivity extends AppCompatActivity {
-    private static final String Name = "FullPriceShop";
+    public static final String FullPriceShopName = "FullPriceShop";
 
     private DatabaseHelper db;
     private boolean sellMode;
@@ -61,7 +60,7 @@ public class FullPriceShopActivity extends AppCompatActivity {
     }
 
     private void SetData() {
-        int accountNumber = GetShopAccountNumber(db, Name);
+        int accountNumber = GetShopAccountNumber(db, FullPriceShopName);
         int money = GetMoney(db, accountNumber);
 
         TextView shopMoney = findViewById(R.id.ShopMoney);
@@ -70,7 +69,7 @@ public class FullPriceShopActivity extends AppCompatActivity {
     }
 
     private void SetItems() {
-        int shopId = GetShopId(db, Name);
+        int shopId = GetShopId(db, FullPriceShopName);
         ArrayList<ShopItemDao> items = GetShopItems(db, shopId);
 
         LinearLayout itemsList = findViewById(R.id.Items);
@@ -202,12 +201,12 @@ public class FullPriceShopActivity extends AppCompatActivity {
                     if(changed) {
                         if (sellMode) {
                             int price = (int) Math.round(item.buyPrice);
-                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, Name), -val*price, "selling " + item.name) != -1
+                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), -val*price, "selling " + item.name) != -1
                                 && DailyGrowthHelper.increaseTopValue(context.db, val*price);
                         }
                         else {
                             int price = (int) Math.round(item.sellPrice);
-                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, Name), val*price, "buying " + item.name) != -1
+                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), val*price, "buying " + item.name) != -1
                                 && DailyGrowthHelper.increaseTopValue(context.db, -val*price);
                         }
                     }
