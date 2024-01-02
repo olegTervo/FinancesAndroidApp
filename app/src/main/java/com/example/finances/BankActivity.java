@@ -1,13 +1,12 @@
 package com.example.finances;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.finances.Database.helpers.AccountHelper;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
@@ -18,7 +17,7 @@ import com.example.finances.views.MyEasyTable;
 
 import java.util.ArrayList;
 
-public class BankActivity extends AppCompatActivity {
+public class BankActivity extends BaseActivity {
     private DatabaseHelper db;
     private int BankMoney;
     private MyEasyTable DataTable;

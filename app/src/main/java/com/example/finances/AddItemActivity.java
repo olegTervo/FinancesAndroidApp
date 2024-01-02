@@ -2,9 +2,6 @@ package com.example.finances;
 
 import static com.example.finances.Database.helpers.ShopHelper.GetShopId;
 import static com.example.finances.Database.helpers.ShopItemHelper.CreateItem;
-import static com.example.finances.MainActivity.log;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.finances.Database.helpers.DatabaseHelper;
 
-public class AddItemActivity extends AppCompatActivity {
+public class AddItemActivity extends BaseActivity {
 
     private DatabaseHelper db;
 
@@ -47,12 +44,12 @@ public class AddItemActivity extends AppCompatActivity {
                     boolean changed = CreateItem(db, name.getText().toString(), GetShopId(db, "FullPriceShop"), Double.parseDouble(buyPrice.getText().toString()), Double.parseDouble(sellPrice.getText().toString()));
 
                     if(!changed)
-                        log(AddItemActivity.this, "Failed to create item, returned false");
+                        Log("Failed to create item, returned false");
                     else
-                        log(AddItemActivity.this, "Saved successfully!");
+                        Log("Saved successfully!");
                 }
                 catch (Exception e) {
-                    log(AddItemActivity.this, "Failed to insert into database");
+                    Log("Failed to insert into database");
                 }
             }
         });

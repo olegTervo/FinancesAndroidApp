@@ -2,17 +2,12 @@ package com.example.finances;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.Button;
 
 import com.example.finances.databinding.ActivityMenuBinding;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends BaseActivity {
 
     private ActivityMenuBinding binding;
 
@@ -29,6 +24,8 @@ public class MenuActivity extends AppCompatActivity {
         Button bank = findViewById(R.id.Bank);
         Button events = findViewById(R.id.Events);
         Button shop = findViewById(R.id.Shop);
+        Button test = findViewById(R.id.TestActivityMenuButton);
+        Button log = findViewById(R.id.logButton);
 
         database.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,10 +51,26 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
+        log.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, LogActivity.class);
+                startActivity(intent);
+            }
+        });
+
         shop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, FullPriceShopActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, TestActivity.class);
                 startActivity(intent);
             }
         });

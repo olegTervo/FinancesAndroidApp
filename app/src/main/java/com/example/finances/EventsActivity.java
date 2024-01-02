@@ -1,7 +1,5 @@
 package com.example.finances;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +13,7 @@ import com.example.finances.Database.helpers.LoanHelper;
 import com.example.finances.Database.helpers.OperationHelper;
 import com.example.finances.views.MyEasyTable;
 
-public class EventsActivity extends AppCompatActivity {
+public class EventsActivity extends BaseActivity {
     private DatabaseHelper db;
 
     private int selectedAccount;

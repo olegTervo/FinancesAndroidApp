@@ -1,17 +1,12 @@
 package com.example.finances;
 
-import static com.example.finances.MainActivity.log;
-
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.finances.Database.helpers.DailyGrowthHelper;
@@ -25,7 +20,7 @@ import com.example.finances.views.MyEasyTable;
 
 import java.util.ArrayList;
 
-public class DatabaseActivity extends AppCompatActivity {
+public class DatabaseActivity extends BaseActivity {
     private DatabaseHelper db;
     private int DailyGrowth;
     private int Target;
@@ -91,16 +86,16 @@ public class DatabaseActivity extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    log(DatabaseActivity.this, "Clearing database...");
+                                    Log("Clearing database...");
                                     DailyGrowthHelper.delete(db);
-                                    log(DatabaseActivity.this, "Cleared!");
+                                    Log("Cleared!");
                                 }})
 
                             .setNegativeButton(android.R.string.no, null)
                             .show();
                 }
                 catch (Exception e) {
-                    log(DatabaseActivity.this, "Failed to clear database" + e.getMessage());
+                    Log("Failed to clear database" + e.getMessage());
                 }
             }
         });
@@ -121,12 +116,12 @@ public class DatabaseActivity extends AppCompatActivity {
                     boolean added = DailyGrowthHelper.update(db, Integer.parseInt(idText), Integer.parseInt(valueText));
 
                     if(!added)
-                        log(DatabaseActivity.this, "Failed to insert into database, returned false");
+                        Log("Failed to insert into database, returned false");
                     else
-                        log(DatabaseActivity.this, "Saved successfully!");
+                        Log("Saved successfully!");
                 }
                 catch (Exception e) {
-                    log(DatabaseActivity.this, "Failed to insert into database" + e.getMessage());
+                    Log("Failed to insert into database" + e.getMessage());
                 }
             }
         });

@@ -7,8 +7,6 @@ import static com.example.finances.Database.helpers.ShopHelper.GetShopId;
 import static com.example.finances.Database.helpers.ShopItemHelper.AddItems;
 import static com.example.finances.Database.helpers.ShopItemHelper.DeleteItem;
 import static com.example.finances.Database.helpers.ShopItemHelper.GetShopItems;
-import static com.example.finances.MainActivity.log;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -29,7 +27,7 @@ import com.example.finances.Database.models.ShopItemDao;
 
 import java.util.ArrayList;
 
-public class FullPriceShopActivity extends AppCompatActivity {
+public class FullPriceShopActivity extends BaseActivity {
     public static final String FullPriceShopName = "FullPriceShop";
 
     private DatabaseHelper db;
@@ -136,12 +134,12 @@ public class FullPriceShopActivity extends AppCompatActivity {
                     boolean changed = DeleteItem(context.db, item.id);
 
                     if(!changed)
-                        log(context, "Failed to delete item, returned false");
+                        Log(context, "Failed to delete item, returned false");
                     else
-                        log(context, "Saved successfully!");
+                        Log(context, "Saved successfully!");
                 }
                 catch (Exception e) {
-                    log(context, "Failed to delete from database");
+                    Log(context, "Failed to delete from database");
                 }
                 finally {
                     context.SetItems();
@@ -212,12 +210,12 @@ public class FullPriceShopActivity extends AppCompatActivity {
                     }
 
                     if(!changed)
-                        log(context, "Failed to change item amount, returned false");
+                        Log(context, "Failed to change item amount, returned false");
                     else
-                        log(context, "Changed successfully!");
+                        Log(context, "Changed successfully!");
                 }
                 catch (Exception e) {
-                    log(context, "Failed to change amount");
+                    Log(context, "Failed to change amount");
                 }
                 finally {
                     context.SetData();

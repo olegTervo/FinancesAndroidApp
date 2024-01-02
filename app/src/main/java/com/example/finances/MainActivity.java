@@ -3,46 +3,52 @@ package com.example.finances;
 import static com.example.finances.FullPriceShopActivity.FullPriceShopName;
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.example.finances.Api.ApiClient;
+import com.example.finances.Api.ApiInterface;
+import com.example.finances.Api.models.CoinListDto;
+import com.example.finances.Api.models.CoinMarketCap.Datum;
 import com.example.finances.Database.helpers.AccountHelper;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.ShopHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
 import com.example.finances.Database.models.DailyGrowthDao;
+import com.example.finances.enums.CryptocurrencyType;
 import com.example.finances.enums.VariableType;
 import com.example.finances.views.LinearGraph;
-import com.example.finances.views.MyEasyTable;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class MainActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends BaseActivity {
     private DatabaseHelper db;
+    private ApiInterface currenciesApi;
 
     private int DailyGrowth;
     private int Target;
     private int Balance;
     private int Actives;
+    private double TonPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +56,58 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = new DatabaseHelper(this);
+        TonPrice = 0;
+        currenciesApi = ApiClient.getClient("https://pro-api.coinmarketcap.com").create(ApiInterface.class);
+        //currenciesApi = ApiClient.getClient("https://sandbox-api.coinmarketcap.com").create(ApiInterface.class);
 
-        refresh();
         MakeButtonHandlers();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        refresh();
+        getCoins();
+    }
+
+    private void getCoins() {
+        if(this.TonPrice != 0) {
+            refresh();
+            return;
+        }
+
+        Call<CoinListDto> call = currenciesApi.getCoins("1", "20", "EUR");
+        call.enqueue(new Callback<CoinListDto>() {
+            @Override
+            public void onResponse(Call<CoinListDto> call, Response<CoinListDto> response) {
+                try {
+                    CoinListDto resp = response.body();
+                    Datum toncoin = resp.getData().stream()
+                            .filter(c -> c.getName().equals(CryptocurrencyType.Ton.toString()))
+                            .collect(Collectors.toList())
+                            .get(0);
+                    MainActivity.this.TonPrice = toncoin.getQuote().getEUR().getPrice();
+
+                    TextView output = findViewById(R.id.Output);
+                    output.setText(
+                            new DecimalFormat("#0.000€")
+                                    .format(MainActivity.this.TonPrice)
+                    );
+                }
+                catch (Exception e) {
+                    Log(e.getLocalizedMessage());
+                }
+                finally {
+                    refresh();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CoinListDto> call, Throwable t) {
+                Log(t.getLocalizedMessage());
+                call.cancel();
+                refresh();
+            }
+        });
     }
 
     @Override
@@ -127,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(values.size() > 30) values = new ArrayList<>(values.subList(0, 30));
 
-        int target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target)) - VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+        int target = this.Target - this.Actives;
         LinearGraph graph = new LinearGraph(this, values, graphId, target);
         SetListeners(graph);
 
@@ -153,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
         if(valueChange < -1000) valueChange = -1000;
         final int valueMove = valueChange;
 
-        TextView output = findViewById(R.id.Output);
-        output.setText("d:" + daysMove + "; v:" + valueChange);
+        TextView coordinates = findViewById(R.id.Coordinates);
+        coordinates.setText("d:" + daysMove + "; v:" + valueChange);
 
         int startIndex = Math.min(daysMove, values.size() - 1);
         startIndex = Math.max(startIndex, 0);
@@ -164,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         values = new ArrayList<>(values.subList(startIndex, endIndex));
         values.forEach(v -> v.value += valueMove);
 
-        int target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target)) - VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+        int target = this.Target - this.Actives;
         LinearGraph graph = new LinearGraph(this, values, graphId, target, x, y);
         SetListeners(graph);
 
@@ -207,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     private void getData() {
         this.DailyGrowth = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.DailyGrowth));
         this.Target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target));
-        this.Actives = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives));
+        this.Actives = (int) Math.round(VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives)) * this.TonPrice);
     }
 
     private void setData() {
@@ -238,9 +287,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         table.addView(row);
-    }
-
-    public static void log(Context context, String text) {
-        Toast.makeText(context, "" + text, Toast.LENGTH_LONG).show();
     }
 }

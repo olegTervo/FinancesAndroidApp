@@ -7,12 +7,12 @@
     android:backgroundTint="#B3541E">
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/TestActivityMenuButton"
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="520dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Button"
+        android:text="Test"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -57,7 +57,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/logButton"
         android:layout_width="133dp"
         android:layout_height="86dp"
         android:layout_marginTop="380dp"
