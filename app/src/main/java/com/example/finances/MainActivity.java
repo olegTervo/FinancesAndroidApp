@@ -173,7 +173,7 @@ public class MainActivity extends BaseActivity {
         DailyGrowthHelper.sync(db);
         ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
         int target = this.Target - this.Actives;
-        graph.setValues(values, target, 150, 0);
+        graph.setValues(values, target, 150, -values.get(0).value);
     }
 
     private void getData() {

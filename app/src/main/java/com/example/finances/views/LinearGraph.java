@@ -1,29 +1,20 @@
 package com.example.finances.views;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.MONTHS;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-
-import androidx.annotation.ColorInt;
 
 import com.example.finances.Database.models.DailyGrowthDao;
-import com.example.finances.MainActivity;
-import com.example.finances.R;
+import com.example.finances.helpers.PaintHelper;
 import com.example.finances.models.GraphPoint;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +85,7 @@ public class LinearGraph extends View {
                 values.size()-1,
                 0);
 
-        this.invalidate();
+        redraw();
     }
 
     private void setDefaultValues() {
@@ -172,7 +163,7 @@ public class LinearGraph extends View {
         this.points = new ArrayList<GraphPoint>();
         Paint monthPaint = getMonthPaint(this.getContext());
 
-        setPoints(this.points, this.graphValues, this.height, this.width);
+        setPoints(this.points, this.graphValues, this.height, (2*this.height)-this.getHeight(), this.width);
         drawBackground(this.canvas, this.width, this.height, this.currentX, this.currentY);
         drawHorizontalLine(this.canvas, getTargetPaint(this.getContext()), this.width, this.height-this.target-Math.round(this.currentY));
 
@@ -213,7 +204,7 @@ public class LinearGraph extends View {
             nextMonthFirst = LocalDate.of(firstDate.getYear()+1, Month.JANUARY, 1);
         else
             nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
-        
+
         long days = DAYS.between(firstDate, nextMonthFirst)+1;
         drawVerticalLine(canvas, monthPaint, height, Math.round(width/30*days));
     }
@@ -250,57 +241,6 @@ public class LinearGraph extends View {
         canvas.drawPath(line, paint);
     }
 
-    private static Paint getDefaultPaint() {
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(4);
-        paint.setStyle(Paint.Style.STROKE);
-
-        return paint;
-    }
-
-    private static Paint getThinPaint() {
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(1);
-        paint.setStyle(Paint.Style.STROKE);
-
-        return paint;
-    }
-
-    private static Paint getGraphPaint(Context context) {
-        // Oh fuck, here how you get a theme color?
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(com.google.android.material.R.attr.colorSecondary, typedValue, true);
-        @ColorInt int color = typedValue.data;
-
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setStrokeWidth(4);
-        paint.setStyle(Paint.Style.STROKE);
-
-        return paint;
-    }
-
-    private static Paint getTargetPaint(Context context) {
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(1);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-
-        return paint;
-    }
-
-    private static Paint getMonthPaint(Context context) {
-        Paint paint = new Paint();
-        paint.setColor(context.getResources().getColor(R.color.pink));
-        paint.setStrokeWidth(1);
-        paint.setStyle(Paint.Style.STROKE);
-
-        return paint;
-    }
-
     private static Path getGraphLine(List<GraphPoint> points) {
         Path path = new Path();
 
@@ -334,9 +274,9 @@ public class LinearGraph extends View {
         return path;
     }
 
-    private static void setPoints(List<GraphPoint> points, List<DailyGrowthDao> values, int height, int width) {
+    private static void setPoints(List<GraphPoint> points, List<DailyGrowthDao> values, int height, int hdef, int width) {
         int max = height;
-        int min = -height;
+        int min = -height+hdef;
         float stepX = width/30;
 
         int i = 0;
@@ -345,11 +285,31 @@ public class LinearGraph extends View {
             if(growth.value > max)
                 points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
             else if(growth.value < min)
-                points.add(new GraphPoint((i*stepX), height*2)); // lowest point
+                points.add(new GraphPoint((i*stepX), height*2-hdef)); // lowest point
             else
-                points.add(new GraphPoint((i*stepX), (height - values.get(i).value))); // normal case
+                points.add(new GraphPoint((i*stepX), (height - growth.value))); // normal case
 
             i++;
         }
+    }
+
+    private static Paint getDefaultPaint() {
+        return PaintHelper.getWhitePaint();
+    }
+
+    private static Paint getThinPaint() {
+        return PaintHelper.getWhiteThinPaint();
+    }
+
+    private static Paint getGraphPaint(Context context) {
+        return PaintHelper.getNeonPaint(context);
+    }
+
+    private static Paint getTargetPaint(Context context) {
+        return PaintHelper.getRedThinPaint(context);
+    }
+
+    private static Paint getMonthPaint(Context context) {
+        return PaintHelper.getPinkThinPaint(context);
     }
 }
