@@ -30,8 +30,8 @@ public class MenuActivity extends BaseActivity {
         database.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MenuActivity.this, DatabaseActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(MenuActivity.this, DatabaseActivity.class);
+                //startActivity(intent);
             }
         });
 

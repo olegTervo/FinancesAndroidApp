@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.example.finances.views.LinearGraph
         android:id="@+id/graph"
         android:layout_width="0dp"
         android:layout_height="370dp"

@@ -1,0 +1,87 @@
+CREATE TABLE DailyGrowth (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Value INTEGER NOT NULL,
+    Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Variable (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Type INTEGER NOT NULL,
+    Value INTEGER NOT NULL
+);
+
+CREATE TABLE Account (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Type INTEGER NOT NULL,
+    Name VARCHAR(1024) NOT NULL,
+    Money INTEGER NOT NULL
+);
+
+CREATE TABLE Investment (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    PureInvestment INTEGER NOT NULL,
+    CurrentPrice INTEGER NOT NULL,
+    OpenDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Loan (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Unpaid INTEGER NOT NULL,
+    Rate INTEGER NOT NULL,
+    OpenDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Operation (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Type INTEGER NOT NULL,
+    Amount INTEGER NOT NULL,
+    Comment VARCHAR(65536) NOT NULL,
+    CreationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE AccountOperations (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AccountId INTEGER NOT NULL,
+    OperationId INTEGER NOT NULL,
+    CONSTRAINT account_operations_account_fk FOREIGN KEY (AccountId) REFERENCES Account(Id),
+    CONSTRAINT account_operations_operations_fk FOREIGN KEY (OperationId) REFERENCES Operation(Id)
+);
+
+CREATE TABLE LoanOperations (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    LoanId INTEGER NOT NULL,
+    OperationId INTEGER NOT NULL,
+    CONSTRAINT loan_operations_loan_fk FOREIGN KEY (LoanId) REFERENCES Loan(Id),
+    CONSTRAINT loan_operations_operation_fk FOREIGN KEY (OperationId) REFERENCES Operation(Id)
+);
+
+CREATE TABLE InvestmentOperations (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    InvestmentId INTEGER NOT NULL,
+    OperationId INTEGER NOT NULL,
+    CONSTRAINT investment_operations_investment_fk FOREIGN KEY (InvestmentId) REFERENCES Investment(Id),
+    CONSTRAINT investment_operations_operation_fk FOREIGN KEY (OperationId) REFERENCES Operation(Id)
+);
+
+CREATE TABLE Shop (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name VARCHAR(1024) NOT NULL,
+    AccountNumber INTEGER NOT NULL,
+    CONSTRAINT shop_bankAccount_fk FOREIGN KEY (AccountNumber) REFERENCES Account (Id)
+);
+
+CREATE TABLE ShopItem (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name VARCHAR(1024) NOT NULL,
+    Amount INTEGER NOT NULL DEFAULT 0,
+    ShopId INTEGER NOT NULL,
+    CONSTRAINT shopItem_shop_fk FOREIGN KEY (ShopId) REFERENCES Shop (Id)
+);
+
+CREATE TABLE Price (
+    ItemId INTEGER NOT NULL,
+    ItemType INTEGER NOT NULL,
+    Type INTEGER NOT NULL,
+    Price FLOAT NOT NULL,
+    PRIMARY KEY (ItemId, ItemType, Type)
+);
