@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.finances.Database.models.LoanDao;
+import com.example.finances.enums.ValueDateType;
 import com.example.finances.models.Loan;
 
 import java.time.LocalDate;
@@ -59,6 +60,8 @@ public class LoanHelper {
             return false;
         }
 
+        ValueDateHelper.increaseTopValue(connection, amount, ValueDateType.DailyGrowth);
+
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -78,6 +81,8 @@ public class LoanHelper {
 
         if(operationId == -1)
             return false;
+
+        ValueDateHelper.increaseTopValue(connection, amount*(-1), ValueDateType.DailyGrowth);
 
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();

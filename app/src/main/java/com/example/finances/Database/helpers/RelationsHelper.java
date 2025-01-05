@@ -2,12 +2,18 @@ package com.example.finances.Database.helpers;
 
 import static com.example.finances.Database.helpers.AccountHelper.ACCOUNT_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.AccountHelper.ACCOUNT_TABLE_NAME;
-import static com.example.finances.Database.helpers.InvestmentHelper.INVESTMENT_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.ApiHelper.API_TABLE_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.ApiHelper.API_TABLE_NAME;
+import static com.example.finances.Database.helpers.InvestmentHelper.INVESTMENT_TABLE_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.InvestmentHelper.INVESTMENT_TABLE_NAME;
 import static com.example.finances.Database.helpers.LoanHelper.LOAN_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.LoanHelper.LOAN_TABLE_NAME;
 import static com.example.finances.Database.helpers.OperationHelper.OPERATION_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.OperationHelper.OPERATION_TABLE_NAME;
+import static com.example.finances.Database.helpers.PriceHelper.PRICE_TABLE_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.PriceHelper.PRICE_TABLE_NAME;
+import static com.example.finances.Database.helpers.ShopItemHelper.SHOP_ITEM_ID_COLUMN_NAME;
+import static com.example.finances.Database.helpers.ShopItemHelper.SHOP_ITEM_TABLE_NAME;
 
 public class RelationsHelper {
     public static final String LOAN_OPERATIONS_TABLE_NAME = "LoanOperations";
@@ -24,6 +30,20 @@ public class RelationsHelper {
     public static final String ACCOUNT_OPERATIONS_ID_COLUMN_NAME = "Id";
     public static final String ACCOUNT_OPERATIONS_ACCOUNT_ID_COLUMN_NAME = "AccountId";
     public static final String ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME = "OperationId";
+
+    public static final String SHOP_ITEM_PRICE_TABLE_NAME = "ShopItemPrice";
+    public static final String SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME = "ShopItemId";
+    public static final String SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME = "PriceId";
+    public static final String SHOP_ITEM_PRICE_TYPE_COLUMN_NAME = "Type";
+
+    public static final String INVESTMENT_PRICE_TABLE_NAME = "InvestmentPrice";
+    public static final String INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME = "InvestmentId";
+    public static final String INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME = "PriceId";
+
+    public static final String INVESTMENT_API_TABLE_NAME = "InvestmentApi";
+    public static final String INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME = "InvestmentId";
+    public static final String INVESTMENT_API_API_ID_COLUMN_NAME = "ApiId";
+    public static final String INVESTMENT_API_NAME_COLUMN_NAME = "Name";
 
     public static String CreateTableString() {
         String initialString = "";
@@ -60,7 +80,7 @@ public class RelationsHelper {
                 + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT investment_operations_investment_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_INVESTMENT_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + INVESTMENT_TABLE_NAME + "(" + INVESTMENT_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + INVESTMENT_TABLE_NAME + "(" + INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT investment_operations_operation_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME + ")"
                 + "REFERENCES " + OPERATION_TABLE_NAME + "(" + OPERATION_ID_COLUMN_NAME + ")"
@@ -86,6 +106,56 @@ public class RelationsHelper {
         return initialString;
     }
 
+    public static String CreateShopItemPriceTableString() {
+        String initialString = "CREATE TABLE "
+                + SHOP_ITEM_PRICE_TABLE_NAME
+                + " (" + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + " INTEGER NOT NULL, "
+                + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+                + SHOP_ITEM_PRICE_TYPE_COLUMN_NAME +" INTEGER NOT NULL, "
+
+                + "CONSTRAINT shop_item_price_shop_item_fk FOREIGN KEY (" + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + SHOP_ITEM_TABLE_NAME + "(" + SHOP_ITEM_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT shop_item_price_price_fk FOREIGN KEY (" + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + PRICE_TABLE_NAME + "(" + PRICE_TABLE_ID_COLUMN_NAME + ")"
+                + ");\n";
+
+        return initialString;
+    }
+
+    public static String CreateInvestmentPriceTableString() {
+        String initialString = "CREATE TABLE "
+                + INVESTMENT_PRICE_TABLE_NAME
+                + " (" + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + " INTEGER NOT NULL, "
+                + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+
+                + "CONSTRAINT investment_price_investment_fk FOREIGN KEY (" + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + INVESTMENT_TABLE_NAME + "(" + INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT investment_price_price_fk FOREIGN KEY (" + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + PRICE_TABLE_NAME + "(" + PRICE_TABLE_ID_COLUMN_NAME + ")"
+                + ");\n";
+
+        return initialString;
+    }
+
+    public static String CreateInvestmentApiTableString() {
+        String initialString = "CREATE TABLE "
+                + INVESTMENT_API_TABLE_NAME
+                + " (" + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " INTEGER NOT NULL, "
+                + INVESTMENT_API_API_ID_COLUMN_NAME +" INTEGER NOT NULL, "
+                + INVESTMENT_API_NAME_COLUMN_NAME +" VARCHAR(1024) NOT NULL, "
+
+                + "CONSTRAINT investment_api_investment_fk FOREIGN KEY (" + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + INVESTMENT_TABLE_NAME + "(" + INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
+
+                + "CONSTRAINT investment_api_api_fk FOREIGN KEY (" + INVESTMENT_API_API_ID_COLUMN_NAME + ") "
+                + "REFERENCES " + API_TABLE_NAME + "(" + API_TABLE_ID_COLUMN_NAME + ")"
+                + ");\n";
+
+        return initialString;
+    }
+
     public static String DropLoanOperationsTableString() {
         String res = "DROP TABLE " + LOAN_OPERATIONS_TABLE_NAME + ";\n";
         return res;
@@ -98,6 +168,21 @@ public class RelationsHelper {
 
     public static String DropAccountOperationsTableString() {
         String res = "DROP TABLE " + ACCOUNT_OPERATIONS_TABLE_NAME + ";\n";
+        return res;
+    }
+
+    public static String DropShopItemPriceTableString() {
+        String res = "DROP TABLE " + SHOP_ITEM_PRICE_TABLE_NAME + ";\n";
+        return res;
+    }
+
+    public static String DropInvestmentPriceTableString() {
+        String res = "DROP TABLE " + INVESTMENT_PRICE_TABLE_NAME + ";\n";
+        return res;
+    }
+
+    public static String DropInvestmentApiTableString() {
+        String res = "DROP TABLE " + INVESTMENT_API_TABLE_NAME + ";\n";
         return res;
     }
 }

@@ -5,7 +5,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,26 +13,30 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.example.finances.Api.ApiClient;
 import com.example.finances.Api.ApiInterface;
 import com.example.finances.Api.models.CoinListDto;
 import com.example.finances.Api.models.CoinMarketCap.Datum;
 import com.example.finances.Database.helpers.AccountHelper;
-import com.example.finances.Database.helpers.DailyGrowthHelper;
+import com.example.finances.Database.helpers.ApiHelper;
+import com.example.finances.Database.helpers.ValueDateHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.ShopHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
+import com.example.finances.Database.models.ApiDao;
 import com.example.finances.Database.models.DailyGrowthDao;
+import com.example.finances.enums.ApiType;
 import com.example.finances.enums.CryptocurrencyType;
+import com.example.finances.enums.ValueDateType;
 import com.example.finances.enums.VariableType;
+import com.example.finances.models.HistoryPrice;
+import com.example.finances.models.ValueDate;
 import com.example.finances.views.LinearGraph;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -43,10 +46,11 @@ import retrofit2.Response;
 public class MainActivity extends BaseActivity {
     private DatabaseHelper db;
     private ApiInterface currenciesApi;
+    private ApiDao currenciesApiParameters;
 
     private int DailyGrowth;
     private int Target;
-    private int Balance;
+    private float Balance;
     private int Actives;
     private double TonPrice;
 
@@ -57,7 +61,8 @@ public class MainActivity extends BaseActivity {
 
         db = new DatabaseHelper(this);
         TonPrice = 0;
-        currenciesApi = ApiClient.getClient("https://pro-api.coinmarketcap.com").create(ApiInterface.class);
+        currenciesApiParameters = ApiHelper.GetApi(db, ApiType.CoinMarketCap);
+        currenciesApi = ApiClient.getClient(currenciesApiParameters.Link).create(ApiInterface.class);
         //currenciesApi = ApiClient.getClient("https://sandbox-api.coinmarketcap.com").create(ApiInterface.class);
 
         MakeButtonHandlers();
@@ -75,7 +80,8 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        Call<CoinListDto> call = currenciesApi.getCoins("1", "20", "EUR");
+        String key = this.currenciesApiParameters.Key;
+        Call<CoinListDto> call = currenciesApi.getCoins(key, "1", "100", "EUR");
         call.enqueue(new Callback<CoinListDto>() {
             @Override
             public void onResponse(Call<CoinListDto> call, Response<CoinListDto> response) {
@@ -143,7 +149,7 @@ public class MainActivity extends BaseActivity {
                 textView.setText("");
 
                 try {
-                    boolean added = DailyGrowthHelper.increaseTopValue(db, Integer.parseInt(text));
+                    boolean added = ValueDateHelper.increaseTopValue(db, Float.parseFloat(text), ValueDateType.DailyGrowth);
 
                     if(!added)
                         Toast.makeText(MainActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
@@ -170,10 +176,12 @@ public class MainActivity extends BaseActivity {
     public void drawGraph() {
         LinearGraph graph = findViewById(R.id.graph);
 
-        DailyGrowthHelper.sync(db);
-        ArrayList<DailyGrowthDao> values = DailyGrowthHelper.getValues(db);
-        int target = this.Target - this.Actives;
-        graph.setValues(values, target, 150, -values.get(0).value);
+        ValueDateHelper.sync(db);
+        ArrayList<ValueDate> values = new ArrayList<>();
+        values.addAll(ValueDateHelper.getValues(db, ValueDateType.DailyGrowth));
+        Collections.reverse(values);
+        float target = this.Target - ValueDateHelper.getFirst(db, ValueDateType.Investments).value;
+        graph.setValues(values, target, 150, -values.get(values.size()-1).value);
     }
 
     private void getData() {
@@ -186,17 +194,25 @@ public class MainActivity extends BaseActivity {
         TableLayout valueTable = findViewById(R.id.mainTable);
         valueTable.removeAllViews();
 
+        DailyGrowthDao last = (DailyGrowthDao) ValueDateHelper.getFirst(db, ValueDateType.DailyGrowth);
+        float lastVal = 0;
+        if (last != null) lastVal = last.value;
+
+        HistoryPrice actives = (HistoryPrice) ValueDateHelper.getFirst(db, ValueDateType.Investments);
+        float lastActives = 0;
+        if (actives != null) lastActives = actives.value;
+
         int daysToIncome = LocalDate.now().getDayOfMonth() < 20
                 ? (int) DAYS.between(LocalDate.now(), LocalDate.now().withDayOfMonth(20))
                 : (int) DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(1).withDayOfMonth(20));
-        this.Balance = DailyGrowthHelper.getTopValue(db) + this.DailyGrowth * daysToIncome;
+        this.Balance = lastVal + this.DailyGrowth * daysToIncome;
         int bank = AccountHelper.GetMoney(db, 1);
         int shop = AccountHelper.GetMoney(db,  ShopHelper.GetShopAccountNumber(db, FullPriceShopName));
-        VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), this.Balance);
+        VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), Math.round(this.Balance));
 
-        addRow(new String[] {"\t+: " + this.Balance,                          "\t\t- : " + this.Actives,                "\t\t€ : " + bank}, valueTable);
-        addRow(new String[] {"\tLast: " + DailyGrowthHelper.getTopValue(db),  "\t\tTarget: " + this.Target,             "\t\t€+ : " + (this.Balance + bank)}, valueTable);
-        addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",           "\t\tDays left: " + daysToIncome,         "\t\t$€+ : " + (this.Balance + bank + shop)}, valueTable);
+        addRow(new String[] {"\t+: " + String.format("%.2f", this.Balance),     "\t\t- : " + String.format("%.2f", lastActives),    "\t\t€ : " + bank}, valueTable);
+        addRow(new String[] {"\tLast: " + String.format("%.2f", lastVal),       "\t\tTarget: " + this.Target,                       "\t\t€+ : " + String.format("%.2f", (this.Balance + bank))}, valueTable);
+        addRow(new String[] {"\tUse: " + this.DailyGrowth + "/day",             "\t\tDays left: " + daysToIncome,                   "\t\t$€+ : " + String.format("%.2f", (this.Balance + bank + shop))}, valueTable);
     }
 
     private void addRow(String[] columns, TableLayout table) {

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
@@ -111,10 +113,18 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         Snackbar snackbar = Snackbar.make(view, message, duration);
         View snackView = snackbar.getView();
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) snackView.getLayoutParams();
-        params.gravity = Gravity.TOP;
 
-        snackView.setLayoutParams(params);
+        if (snackView.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+            CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) snackView.getLayoutParams();
+            params.gravity = Gravity.TOP;
+            snackView.setLayoutParams(params);
+        }
+        else {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackView.getLayoutParams();
+            params.gravity = Gravity.TOP;
+            snackView.setLayoutParams(params);
+        }
+
         snackView.setBackgroundColor(backgroundColour);
         snackbar.setTextColor(Color.WHITE);
 
@@ -128,7 +138,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    protected File getLogFile() {
+    protected File getLogFile() throws IOException {
         File appDir = getExternalFilesDir(null);
         File logDir = new File(appDir, "log");
 
@@ -136,6 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             logDir.mkdir();
 
         File[] logs = logDir.listFiles();
+        File ret = new File(logDir, "log0.txt");
 
         if(logs.length > 0) {
             Arrays.sort(logs, (a, b) -> b.getName().compareTo(a.getName()));
@@ -146,11 +157,13 @@ public abstract class BaseActivity extends AppCompatActivity {
             if(logs[0].getName().contains("log")) {
                 String n = logs[0].getName().substring(3, logs[0].getName().indexOf("."));
                 int num = Integer.parseInt(n);
-                return new File(logDir, "log" + (num+1) + ".txt");
+                ret = new File(logDir, "log" + (num+1) + ".txt");
             }
         }
 
-        return new File(logDir, "log0.txt");
+        if (!ret.exists())
+            ret.createNewFile();
+        return ret;
     }
 
     private int countRows(File file) {

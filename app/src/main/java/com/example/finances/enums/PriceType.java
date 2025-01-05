@@ -1,19 +1,22 @@
 package com.example.finances.enums;
 
-public enum ItemType {
+public enum PriceType {
     Unknown,
-    ShopItem;
+    ShopItem,
+    Investment;
 
-    public static int toInt(ItemType type) {
+    public static int toInt(PriceType type) {
         switch (type) {
             case ShopItem: return 1;
+            case Investment: return 2;
             default: return 0;
         }
     }
 
-    public static ItemType fromInt(int type) {
+    public static PriceType fromInt(int type) {
         switch (type) {
             case 1: return ShopItem;
+            case 2: return Investment;
             default: return Unknown;
         }
     }

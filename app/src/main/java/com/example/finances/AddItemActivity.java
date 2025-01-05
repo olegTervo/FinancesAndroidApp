@@ -41,7 +41,7 @@ public class AddItemActivity extends BaseActivity {
                 TextView sellPrice = findViewById(R.id.SellPrice);
 
                 try {
-                    boolean changed = CreateItem(db, name.getText().toString(), GetShopId(db, "FullPriceShop"), Double.parseDouble(buyPrice.getText().toString()), Double.parseDouble(sellPrice.getText().toString()));
+                    boolean changed = CreateItem(db, name.getText().toString(), GetShopId(db, "FullPriceShop"), Float.parseFloat(buyPrice.getText().toString()), Float.parseFloat(sellPrice.getText().toString()));
 
                     if(!changed)
                         Log("Failed to create item, returned false");

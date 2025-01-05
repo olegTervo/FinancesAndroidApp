@@ -13,6 +13,7 @@ import android.view.View;
 import com.example.finances.Database.models.DailyGrowthDao;
 import com.example.finances.helpers.PaintHelper;
 import com.example.finances.models.GraphPoint;
+import com.example.finances.models.ValueDate;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -22,9 +23,9 @@ import java.util.List;
 
 public class LinearGraph extends View {
     private List<GraphPoint> points;
-    private List<DailyGrowthDao> values;
-    private List<DailyGrowthDao> graphValues;
-    private int target;
+    private List<ValueDate> values;
+    private List<ValueDate> graphValues;
+    private float target;
     private int width;
     private int height;
     public float currentX;
@@ -71,8 +72,7 @@ public class LinearGraph extends View {
         return true;
     }
 
-    public void setValues(ArrayList<DailyGrowthDao> values, int target, float x, float y) {
-        Collections.reverse(values);
+    public void setValues(ArrayList<ValueDate> values, float target, float x, float y) {
         this.values = values;
 
         this.target = target;
@@ -81,8 +81,8 @@ public class LinearGraph extends View {
 
         this.graphValues = getGraphValues(
                 values,
-                values.size()-27,
-                values.size()-1,
+                Math.max(values.size()-27, 0),
+                Math.max(values.size()-1, 0),
                 0);
 
         redraw();
@@ -93,7 +93,7 @@ public class LinearGraph extends View {
         this.values = new ArrayList<>();
         this.graphValues = new ArrayList<>();
 
-        this.height = 400;
+        this.height = 500;
         this.target = 0;
         this.currentX = 0;
         this.currentY = 0;
@@ -106,16 +106,17 @@ public class LinearGraph extends View {
 
     private void redraw() {
         int daysMove = -Math.round(this.currentX / 30);
-        if (daysMove > 100) daysMove = 100;
-        if (daysMove < -100) daysMove = -100;
+        //if (daysMove > 30) daysMove = 30;
+        //if (daysMove < -1000) daysMove = -1000;
 
         int valueChange = Math.round(this.currentY);
-        if (valueChange > 1000) valueChange = 1000;
-        if (valueChange < -1000) valueChange = -1000;
+        //if (valueChange > 1000) valueChange = 1000;
+        //if (valueChange < -1000) valueChange = -1000;
 
         int startIndex = Math.min(daysMove, this.values.size() - 1);
         startIndex = Math.max(startIndex, 1);
-        int endIndex = Math.min(daysMove + 32, this.values.size() - 1);
+
+        int endIndex = Math.min(daysMove + 32, this.values.size());
         endIndex = Math.max(endIndex, 1);
 
         this.graphValues = getGraphValues(
@@ -161,32 +162,26 @@ public class LinearGraph extends View {
         this.width = this.getWidth();
         //this.height = this.getHeight();
         this.points = new ArrayList<GraphPoint>();
-        Paint monthPaint = getMonthPaint(this.getContext());
 
         setPoints(this.points, this.graphValues, this.height, (2*this.height)-this.getHeight(), this.width);
         drawBackground(this.canvas, this.width, this.height, this.currentX, this.currentY);
         drawHorizontalLine(this.canvas, getTargetPaint(this.getContext()), this.width, this.height-this.target-Math.round(this.currentY));
 
         if(this.graphValues.size() > 0)
-            drawEndOfMonth(this.canvas, monthPaint, this.graphValues.get(0).date, this.width, this.height);
+            drawEndOfMonth(this.canvas, getMonthPaint(this.getContext()), this.graphValues.get(0).date, this.width, this.height);
 
         this.canvas.drawPath(getGraphLine(this.points), getGraphPaint(this.getContext()));
-
-        //writeDebug("x:" + this.currentX + "\ny:" + this.currentY, 1);
     }
 
-    private void writeDebug(String text, int line) {
-        Paint defaultPaint = getDefaultPaint();
-        defaultPaint.setTextSize(48f);
-        this.canvas.drawText(text, 100, 100*line, defaultPaint);
-    }
+    private static List<ValueDate> getGraphValues(List<ValueDate> values, int start, int end, int valueChange) {
+        List<ValueDate> part = new ArrayList<>();
 
-    private static List<DailyGrowthDao> getGraphValues(List<DailyGrowthDao> values, int start, int end, int valueChange) {
-        List<DailyGrowthDao> part = new ArrayList<>();
+        if(values.isEmpty())
+            return part;
 
         for (int i = start; i <= end; i++) {
             try {
-                DailyGrowthDao clone = (DailyGrowthDao) values.get(i).clone();
+                ValueDate clone = (ValueDate) values.get(i).clone();
                 clone.value += valueChange;
                 part.add(clone);
             } catch (CloneNotSupportedException e) {
@@ -195,6 +190,25 @@ public class LinearGraph extends View {
         }
 
         return part;
+    }
+
+    private static void setPoints(List<GraphPoint> points, List<ValueDate> values, int height, int hdef, int width) {
+        int max = height;
+        int min = -height+hdef;
+        float stepX = width/30;
+
+        int i = 0;
+
+        for(ValueDate growth : values) {
+            if(growth.value > max)
+                points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
+            else if(growth.value < min)
+                points.add(new GraphPoint((i*stepX), height*2-hdef)); // lowest point
+            else
+                points.add(new GraphPoint((i*stepX), (height - growth.value))); // normal case
+
+            i++;
+        }
     }
 
     private static void drawEndOfMonth(Canvas canvas, Paint monthPaint, LocalDate firstDate, int width, int height) {
@@ -206,7 +220,7 @@ public class LinearGraph extends View {
             nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
 
         long days = DAYS.between(firstDate, nextMonthFirst)+1;
-        drawVerticalLine(canvas, monthPaint, height, Math.round(width/30*days));
+        drawVerticalLine(canvas, monthPaint, height+400, Math.round(width/30*days));
     }
 
     private static void drawBackground(Canvas canvas, int width, int height, float currentX, float currentY) {
@@ -224,6 +238,10 @@ public class LinearGraph extends View {
         drawHorizontalLine(canvas, thinPaint, width, 600 - y%100);
         drawHorizontalLine(canvas, thinPaint, width, 700 - y%100);
         drawHorizontalLine(canvas, thinPaint, width, 800 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 900 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 1000 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 1100 - y%100);
+        drawHorizontalLine(canvas, thinPaint, width, 1200 - y%100);
         drawHorizontalLine(canvas, defaultPaint, width, 400 - y);
 
         for(int i = 0; i <= 35; i+=5) {
@@ -236,7 +254,7 @@ public class LinearGraph extends View {
         canvas.drawPath(line, paint);
     }
 
-    private static void drawHorizontalLine(Canvas canvas, Paint paint, int width, int y) {
+    private static void drawHorizontalLine(Canvas canvas, Paint paint, int width, float y) {
         Path line = getHorizontalLine(width, y);
         canvas.drawPath(line, paint);
     }
@@ -255,7 +273,7 @@ public class LinearGraph extends View {
         return path;
     }
 
-    private static Path getHorizontalLine(int width, int y) {
+    private static Path getHorizontalLine(int width, float y) {
         Path path = new Path();
         path.moveTo(0, y);
         path.lineTo(width, y);
@@ -272,25 +290,6 @@ public class LinearGraph extends View {
         path.lineTo(x, margin+length);
 
         return path;
-    }
-
-    private static void setPoints(List<GraphPoint> points, List<DailyGrowthDao> values, int height, int hdef, int width) {
-        int max = height;
-        int min = -height+hdef;
-        float stepX = width/30;
-
-        int i = 0;
-
-        for(DailyGrowthDao growth : values) {
-            if(growth.value > max)
-                points.add(new GraphPoint((i*stepX), 0)); // y = 0 means on top
-            else if(growth.value < min)
-                points.add(new GraphPoint((i*stepX), height*2-hdef)); // lowest point
-            else
-                points.add(new GraphPoint((i*stepX), (height - growth.value))); // normal case
-
-            i++;
-        }
     }
 
     private static Paint getDefaultPaint() {
@@ -311,5 +310,11 @@ public class LinearGraph extends View {
 
     private static Paint getMonthPaint(Context context) {
         return PaintHelper.getPinkThinPaint(context);
+    }
+
+    private void writeDebug(String text, int line) {
+        Paint defaultPaint = getDefaultPaint();
+        defaultPaint.setTextSize(48f);
+        this.canvas.drawText(text, 100, 100*line, defaultPaint);
     }
 }

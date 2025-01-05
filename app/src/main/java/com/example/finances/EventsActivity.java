@@ -9,6 +9,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.helpers.InvestmentHelper;
 import com.example.finances.Database.helpers.LoanHelper;
 import com.example.finances.Database.helpers.OperationHelper;
 import com.example.finances.views.MyEasyTable;
@@ -92,7 +93,7 @@ public class EventsActivity extends BaseActivity {
     }
 
     private void setEvents(){
-        ScrollView eventsListView = findViewById(R.id.EventsView);
+        ScrollView eventsListView = findViewById(R.id.investmentsList);
         int tableId = 1101002;
 
         eventsListView.removeAllViews();

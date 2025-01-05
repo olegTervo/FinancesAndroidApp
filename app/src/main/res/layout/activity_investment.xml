@@ -6,4 +6,85 @@
     android:layout_height="match_parent"
     tools:context=".InvestmentActivity">
 
+    <com.example.finances.views.LinearGraph
+        android:id="@+id/investmentGraph"
+        android:layout_width="0dp"
+        android:layout_height="370dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/addManual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="70dp"
+        android:text="Add manual"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/investmentGraph" />
+
+    <Button
+        android:id="@+id/addApi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="70dp"
+        android:text="Add api"
+        app:layout_constraintStart_toEndOf="@+id/addManual"
+        app:layout_constraintTop_toBottomOf="@+id/investmentGraph" />
+
+    <Button
+        android:id="@+id/listInvestments"
+        android:layout_width="69dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="40dp"
+        android:text="List"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addManual" />
+
+    <Button
+        android:id="@+id/editInvestments"
+        android:layout_width="74dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        android:text="Edit"
+        app:layout_constraintStart_toEndOf="@+id/listInvestments"
+        app:layout_constraintTop_toBottomOf="@+id/addApi" />
+
+    <ImageView
+        android:id="@+id/updateInvestmentsImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="40dp"
+        android:background="#121212"
+        app:layout_constraintStart_toEndOf="@+id/editInvestments"
+        app:layout_constraintTop_toBottomOf="@+id/addApi"
+        app:srcCompat="@android:drawable/stat_notify_sync" />
+
+    <ScrollView
+        android:layout_width="358dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/investmentGraph">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/investmentsInfo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

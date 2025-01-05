@@ -25,6 +25,11 @@ public class DailyGrowthHelper{
         return initialString;
     }
 
+    public static String DropTableString() {
+        String res = "DROP TABLE " + FINANCES_TABLE_NAME + ";\n";
+        return res;
+    }
+
     public static boolean sync(DatabaseHelper connection) {
         DailyGrowthDao top = getFirst(connection);
 

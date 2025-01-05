@@ -1,21 +1,25 @@
 package com.example.finances.Database.models;
 
+import com.example.finances.models.ValueDate;
+
 import java.time.LocalDate;
 
-public class DailyGrowthDao implements Cloneable {
+public class DailyGrowthDao extends ValueDate implements Cloneable {
     public int id;
-    public int value;
-    public LocalDate date;
 
-    public DailyGrowthDao(int id, int value, LocalDate date) {
+    public DailyGrowthDao(int id, float value, LocalDate date) {
+        super(value, date);
         this.id = id;
-        this.value = value;
-        this.date = date;
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class LogActivity extends BaseActivity {
             }
         }
         catch (Exception e) {
-            Log("File write failed: " + e.toString());
+            Log(e.toString());
         }
         finally {
             for(int i = lines.size()-1; i >= 0; i--)

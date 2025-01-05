@@ -8,100 +8,108 @@
 
     <Button
         android:id="@+id/TestActivityMenuButton"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginTop="520dp"
         android:backgroundTint="#EEEEEE"
         android:text="Test"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toEndOf="@+id/Database"
+        app:layout_constraintStart_toEndOf="@+id/investments"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/Shop"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="520dp"
         android:backgroundTint="#EEEEEE"
         android:text="@string/shop"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button6"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginTop="240dp"
         android:backgroundTint="#EEEEEE"
         android:text="Accounts"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toEndOf="@+id/Database"
+        app:layout_constraintStart_toEndOf="@+id/investments"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/Events"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="240dp"
         android:backgroundTint="#EEEEEE"
         android:text="Events"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/logButton"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginTop="380dp"
         android:backgroundTint="#EEEEEE"
         android:text="Log"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toEndOf="@+id/Database"
+        app:layout_constraintStart_toEndOf="@+id/investments"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="380dp"
         android:backgroundTint="#EEEEEE"
         android:text="Statistic"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/Database"
-        android:layout_width="133dp"
+        android:id="@+id/investments"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="100dp"
         android:backgroundTint="#EEEEEE"
-        android:text="Database"
+        android:text="Investments"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/Bank"
-        android:layout_width="133dp"
+        android:layout_width="140dp"
         android:layout_height="86dp"
         android:layout_marginTop="100dp"
         android:backgroundTint="#EEEEEE"
         android:text="Bank"
         android:textColor="@color/black"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/Database"
+        app:layout_constraintStart_toEndOf="@+id/investments"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

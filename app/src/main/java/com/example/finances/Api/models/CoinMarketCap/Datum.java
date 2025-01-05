@@ -1,6 +1,8 @@
 package com.example.finances.Api.models.CoinMarketCap;
 
 import java.io.Serializable;
+
+import com.example.finances.Database.models.OperationDao;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -139,6 +141,11 @@ public class Datum implements Serializable
 
     public void setQuote(Quote quote) {
         this.quote = quote;
+    }
+
+    @Override
+    public String toString() {
+        return name + "|" +  symbol + "|" + slug;
     }
 
 }

@@ -1,8 +1,8 @@
 package com.example.finances.Database.helpers;
 
-import static com.example.finances.Database.helpers.PriceHelper.CreateShopItemPrice;
-import static com.example.finances.Database.helpers.PriceHelper.DeleteItemPrices;
-import static com.example.finances.Database.helpers.PriceHelper.GetShopItemPrice;
+import static com.example.finances.Database.helpers.PriceHelper.CreatePrice;
+import static com.example.finances.Database.helpers.PriceHelper.DeletePrices;
+import static com.example.finances.Database.helpers.PriceHelper.GetPrice;
 import static com.example.finances.Database.helpers.ShopHelper.SHOP_ID_COLUMN_NAME;
 import static com.example.finances.Database.helpers.ShopHelper.SHOP_TABLE_NAME;
 
@@ -11,7 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.finances.Database.models.ShopItemDao;
-import com.example.finances.enums.ItemType;
+import com.example.finances.enums.PriceType;
 import com.example.finances.enums.ShopItemPriceType;
 
 import java.util.ArrayList;
@@ -86,14 +86,14 @@ public class ShopItemHelper {
         reader.close();
 
         for(ShopItemDao item : result) {
-            item.SetPrice(ShopItemPriceType.BuyPrice, GetShopItemPrice(connection, item.id, ShopItemPriceType.BuyPrice));
-            item.SetPrice(ShopItemPriceType.SellPrice, GetShopItemPrice(connection, item.id, ShopItemPriceType.SellPrice));
+            item.SetPrice(ShopItemPriceType.BuyPrice, GetPrice(connection, item.id, PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.BuyPrice)));
+            item.SetPrice(ShopItemPriceType.SellPrice, GetPrice(connection, item.id, PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.SellPrice)));
         }
 
         return result;
     }
 
-    public static boolean CreateItem(DatabaseHelper connection, String name, int shopId, double buyPrice, double sellPrice) {
+    public static boolean CreateItem(DatabaseHelper connection, String name, int shopId, float buyPrice, float sellPrice) {
         long res = -1;
 
         SQLiteDatabase db = connection.getWritableDatabase();
@@ -106,7 +106,8 @@ public class ShopItemHelper {
         if (res == -1) {
             return false;
         }
-        return CreateShopItemPrice(connection, GetShopItemNumber(connection, name), buyPrice, sellPrice);
+        return CreatePrice(connection, GetShopItemNumber(connection, name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.BuyPrice), buyPrice) &&
+                CreatePrice(connection, GetShopItemNumber(connection, name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.SellPrice), sellPrice);
     }
 
     public static int GetItemAmount(DatabaseHelper connection, int id) {
@@ -142,7 +143,7 @@ public class ShopItemHelper {
     public static boolean DeleteItem(DatabaseHelper connection, int id) {
         long res = -1;
 
-        if(DeleteItemPrices(connection, id, ItemType.ShopItem)) {
+        if(DeletePrices(connection, id, PriceType.ShopItem)) {
             SQLiteDatabase db = connection.getWritableDatabase();
             res = db.delete(SHOP_ITEM_TABLE_NAME, SHOP_ITEM_ID_COLUMN_NAME + "=?", new String[] { Integer.toString(id) });
         }
