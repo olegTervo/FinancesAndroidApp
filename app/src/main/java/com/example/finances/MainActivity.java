@@ -3,9 +3,11 @@ package com.example.finances;
 import static com.example.finances.FullPriceShopActivity.FullPriceShopName;
 import static java.time.temporal.ChronoUnit.DAYS;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -152,14 +154,21 @@ public class MainActivity extends BaseActivity {
                     boolean added = ValueDateHelper.increaseTopValue(db, Float.parseFloat(text), ValueDateType.DailyGrowth);
 
                     if(!added)
-                        Toast.makeText(MainActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
+                        ShowError(view, "Failed to insert into database, returned false");
                     else
-                        Toast.makeText(MainActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
+                        ShowConfirmation(view, "Saved successfully!", 1000);
 
                     refresh();
                 }
                 catch (Exception e) {
-                    Toast.makeText(MainActivity.this, "Failed to insert into database" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    ShowError(view, "Failed to insert into database" + e.getMessage());
+                }
+                finally {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
                 }
             }
         });

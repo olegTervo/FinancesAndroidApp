@@ -60,8 +60,6 @@ public class LoanHelper {
             return false;
         }
 
-        ValueDateHelper.increaseTopValue(connection, amount, ValueDateType.DailyGrowth);
-
         SQLiteDatabase db = connection.getWritableDatabase();
         ContentValues cv = new ContentValues();
 

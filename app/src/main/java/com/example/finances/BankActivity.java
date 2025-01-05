@@ -12,7 +12,9 @@ import com.example.finances.Database.helpers.AccountHelper;
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.LoanHelper;
+import com.example.finances.Database.helpers.ValueDateHelper;
 import com.example.finances.Database.models.LoanDao;
+import com.example.finances.enums.ValueDateType;
 import com.example.finances.views.MyEasyTable;
 
 import java.util.ArrayList;
@@ -90,17 +92,17 @@ public class BankActivity extends BaseActivity {
                                 added = LoanHelper.PayLoan(db, loan.id, loan.unpaid);
                                 BankActivity.this.Loans.remove(BankActivity.this.Loans.size()-1);
                                 value -= loan.unpaid;
-                                added = DailyGrowthHelper.increaseTopValue(db, loan.unpaid*(-1));
+                                ValueDateHelper.increaseTopValue(db, loan.unpaid*(-1), ValueDateType.DailyGrowth);
                             }
                             else {
                                 added = LoanHelper.PayLoan(db, loan.id, value);
-                                added = DailyGrowthHelper.increaseTopValue(db, value*(-1));
+                                ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
                                 value = 0;
                             }
                         }
                         else {
                             added = AccountHelper.PutMoney(db, 1, value, "Extra money") != -1;
-                            added = DailyGrowthHelper.increaseTopValue(db, value*(-1));
+                            ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
                             value = 0;
                         }
                     }
@@ -134,7 +136,7 @@ public class BankActivity extends BaseActivity {
                         Toast.makeText(BankActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
                     else{
                         Toast.makeText(BankActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
-                        DailyGrowthHelper.increaseTopValue(db, value);
+                        ValueDateHelper.increaseTopValue(db, value, ValueDateType.DailyGrowth);
                     }
 
                     refresh();

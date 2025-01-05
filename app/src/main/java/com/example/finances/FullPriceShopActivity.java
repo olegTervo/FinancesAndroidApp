@@ -23,7 +23,9 @@ import android.widget.TextView;
 
 import com.example.finances.Database.helpers.DailyGrowthHelper;
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.Database.helpers.ValueDateHelper;
 import com.example.finances.Database.models.ShopItemDao;
+import com.example.finances.enums.ValueDateType;
 
 import java.util.ArrayList;
 
@@ -200,12 +202,12 @@ public class FullPriceShopActivity extends BaseActivity {
                         if (sellMode) {
                             int price = (int) Math.round(item.buyPrice);
                             changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), -val*price, "selling " + item.name) != -1
-                                && DailyGrowthHelper.increaseTopValue(context.db, val*price);
+                                && ValueDateHelper.increaseTopValue(context.db, val*price, ValueDateType.DailyGrowth);
                         }
                         else {
                             int price = (int) Math.round(item.sellPrice);
                             changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), val*price, "buying " + item.name) != -1
-                                && DailyGrowthHelper.increaseTopValue(context.db, -val*price);
+                                && ValueDateHelper.increaseTopValue(context.db, -val*price, ValueDateType.DailyGrowth);
                         }
                     }
 
