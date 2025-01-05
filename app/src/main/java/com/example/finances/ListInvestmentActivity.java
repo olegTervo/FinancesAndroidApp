@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.ScrollView;
 
 import com.example.finances.Database.helpers.DatabaseHelper;
+import com.example.finances.common.models.ApiCallback;
 import com.example.finances.common.services.EventService;
 import com.example.finances.models.Investment;
 import com.example.finances.services.InvestmentsService;
@@ -22,8 +23,8 @@ public class ListInvestmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_investment);
 
         this.db = new DatabaseHelper(this);
-        this.service = new InvestmentsService(db, new EventService());
-        this.investments = service.getInvestments(true).toArray();
+        this.service = new InvestmentsService(db);
+        this.investments = service.getInvestments().toArray();
         setData();
     }
 

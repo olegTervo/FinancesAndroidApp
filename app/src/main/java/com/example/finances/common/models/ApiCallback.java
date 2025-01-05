@@ -1,9 +1,18 @@
 package com.example.finances.common.models;
 
-import com.example.finances.Api.models.CoinListDto;
-import retrofit2.Response;
+import com.example.finances.common.interfaces.IApiCallback;
 
-public interface ApiCallback {
-    void onSuccess(Response<CoinListDto> response);
-    void onFailure(Throwable t);
+public class ApiCallback implements IApiCallback {
+
+    public ApiCallback() {
+    }
+
+    @Override
+    public void onSuccess() {
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+        System.err.println("Call failed");
+    }
 }

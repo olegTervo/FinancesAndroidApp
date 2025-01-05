@@ -10,12 +10,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.finances.Api.models.CoinListDto;
 import com.example.finances.Database.helpers.DatabaseHelper;
 import com.example.finances.Database.helpers.InvestmentHelper;
 import com.example.finances.Database.helpers.PriceHelper;
 import com.example.finances.Database.helpers.ValueDateHelper;
 import com.example.finances.Database.helpers.VariablesHelper;
 import com.example.finances.Database.models.InvestmentDao;
+import com.example.finances.common.interfaces.IApiCallback;
+import com.example.finances.common.models.ApiCallback;
 import com.example.finances.common.models.EventListenerBase;
 import com.example.finances.common.models.InvestmentsSyncedEventListener;
 import com.example.finances.common.models.ShowCoolEventListener;
@@ -36,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import retrofit2.Response;
+
 public class InvestmentActivity extends BaseActivity {
     private DatabaseHelper db;
     private InvestmentsService investmentService;
@@ -47,36 +52,15 @@ public class InvestmentActivity extends BaseActivity {
         setContentView(R.layout.activity_investment);
 
         this.db = new DatabaseHelper(this);
-
-        InvestmentsSyncedEventListener listener = new InvestmentsSyncedEventListener(this);
-        EventService eventHandler = new EventService();
-        eventHandler.addListener(listener);
-
-        this.investmentService = new InvestmentsService(this.db, eventHandler);
+        this.investmentService = new InvestmentsService(this.db);
         setListeners();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        try {
-            Thread.sleep(1000);
-        }
-        catch (Exception e) {}
-        this.investmentService.sync();
-    }
 
-    public void ShowCool(){
-        //ValueDate res = ValueDateHelper.getFirst(db, ValueDateType.Investments);
-
-        this.investments = ValueDateHelper
-                .getValues(db, ValueDateType.Investments)
-                .stream()
-                .map(v -> (HistoryPrice) v)
-                .collect(Collectors.toList());
-
-        Log("COOL " + this.investments.get(0).value);
-        refresh();
+        this.investmentService.sync(getCallback());
     }
 
     public void refresh() {
@@ -89,7 +73,7 @@ public class InvestmentActivity extends BaseActivity {
         fillGaps();
         String text = "";
 
-        List<Investment> ins = investmentService.getInvestments(false);
+        List<Investment> ins = investmentService.getInvestments();
 
         for (HistoryPrice price : investments){
             text = price.toString() + "\n" + text;
@@ -177,10 +161,24 @@ public class InvestmentActivity extends BaseActivity {
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                investmentService.sync();
-                ShowConfirmation(view, "Updated!", 1000);
+                investmentService.sync(getCallback());
             }
         });
     }
+    private IApiCallback getCallback() {
+        return new IApiCallback() {
+            @Override
+            public void onSuccess() {
+                ShowConfirmation(findViewById(R.id.investmentGraph), "Syncronized!", 1000);
+                refresh();
+            }
 
+            @Override
+            public void onFailure(Throwable t) {
+                ShowError(findViewById(R.id.investmentGraph), "Callback failed");
+                LogToFile("ERROR: " + t.getMessage());
+                refresh();
+            }
+        };
+    }
 }

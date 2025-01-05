@@ -20,6 +20,8 @@ import com.example.finances.Database.helpers.PriceHelper;
 import com.example.finances.Database.helpers.ValueDateHelper;
 import com.example.finances.Database.models.ApiDao;
 import com.example.finances.Database.models.InvestmentDao;
+import com.example.finances.common.interfaces.IApiCallback;
+import com.example.finances.common.models.ApiCallback;
 import com.example.finances.common.services.EventService;
 import com.example.finances.enums.ApiType;
 import com.example.finances.enums.PriceType;
@@ -47,7 +49,7 @@ public class AddApiInvestmentActivity extends BaseActivity {
         setContentView(R.layout.activity_add_api_investment);
 
         this.db = new DatabaseHelper(this);
-        this.service = new InvestmentsService(db, new EventService());
+        this.service = new InvestmentsService(db);
         setListeners();
     }
 
@@ -78,7 +80,7 @@ public class AddApiInvestmentActivity extends BaseActivity {
                 long investmentId = InvestmentHelper.CreateInvestment(db, toCreate);
                 boolean passed = ApiHelper.CreateInvestmentApi(db, ApiType.CoinMarketCap, investmentId, apiSpecificName.getText().toString());
 
-                List<Investment> investmentList = service.getInvestments(true);
+                List<Investment> investmentList = service.getInvestments();
                 List<Investment> filtered = investmentList.stream().filter(i -> i.getId() == investmentId).collect(Collectors.toList());
 
                 System.out.println(filtered.get(0).toString());

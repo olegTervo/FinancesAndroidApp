@@ -11,6 +11,5 @@ public class ShowCoolEventListener extends EventListenerBase{
 
     @Override
     public void onEventOccurred() {
-        view.ShowCool();
     }
 }

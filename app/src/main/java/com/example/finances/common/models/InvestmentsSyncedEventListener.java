@@ -13,7 +13,5 @@ public class InvestmentsSyncedEventListener extends EventListenerBase{
 
     @Override
     public void onEventOccurred() {
-        //view.refresh();
-        view.ShowCool();
     }
 }
