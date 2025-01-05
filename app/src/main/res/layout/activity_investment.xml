@@ -21,27 +21,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="24dp"
         android:text="Add manual"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/investmentGraph" />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 
     <Button
         android:id="@+id/addApi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="50dp"
         android:text="Add api"
-        app:layout_constraintStart_toEndOf="@+id/addManual"
-        app:layout_constraintTop_toBottomOf="@+id/investmentGraph" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
 
     <Button
         android:id="@+id/listInvestments"
         android:layout_width="69dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:text="List"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addManual" />
@@ -51,7 +51,7 @@
         android:layout_width="74dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:text="Edit"
         app:layout_constraintStart_toEndOf="@+id/listInvestments"
         app:layout_constraintTop_toBottomOf="@+id/addApi" />
@@ -60,16 +60,17 @@
         android:id="@+id/updateInvestmentsImage"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="50dp"
         android:background="#121212"
-        app:layout_constraintStart_toEndOf="@+id/editInvestments"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addApi"
         app:srcCompat="@android:drawable/stat_notify_sync" />
 
     <ScrollView
+        android:id="@+id/scrollView3"
         android:layout_width="358dp"
-        android:layout_height="48dp"
+        android:layout_height="100dp"
         android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

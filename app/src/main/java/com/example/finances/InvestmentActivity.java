@@ -73,12 +73,9 @@ public class InvestmentActivity extends BaseActivity {
         fillGaps();
         String text = "";
 
-        List<Investment> ins = investmentService.getInvestments();
-
         for (HistoryPrice price : investments){
             text = price.toString() + "\n" + text;
         }
-        text = ins.get(0).getLastPrice().GetModified() + "\n" + text;
 
         TextView info = findViewById(R.id.investmentsInfo);
         info.setText(text);
