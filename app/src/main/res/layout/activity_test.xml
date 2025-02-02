@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TestActivity">
+    tools:context=".presentation.activities.TestActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/testLay2"
@@ -72,7 +72,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/submit" />
 
-        <com.example.finances.views.LinearGraph
+        <com.example.finances.presentation.views.LinearGraph
             android:id="@+id/test_graph"
             android:layout_width="0dp"
             android:layout_height="0dp"

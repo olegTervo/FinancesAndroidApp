@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InvestmentActivity">
+    tools:context=".presentation.activities.InvestmentActivity">
 
-    <com.example.finances.views.LinearGraph
+    <com.example.finances.presentation.views.LinearGraph
         android:id="@+id/investmentGraph"
         android:layout_width="0dp"
         android:layout_height="370dp"

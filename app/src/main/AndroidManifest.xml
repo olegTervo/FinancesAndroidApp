@@ -12,57 +12,57 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Finances">
         <activity
-            android:name=".EditInvestmentsActivity"
+            android:name=".presentation.activities.EditInvestmentsActivity"
             android:exported="false" />
         <activity
-            android:name=".ListInvestmentActivity"
+            android:name=".presentation.activities.ListInvestmentActivity"
             android:exported="false" />
         <activity
-            android:name=".AddApiInvestmentActivity"
+            android:name=".presentation.activities.AddApiInvestmentActivity"
             android:exported="false" />
         <activity
-            android:name=".AddManualInvestmentActivity"
+            android:name=".presentation.activities.AddManualInvestmentActivity"
             android:exported="false" />
         <activity
-            android:name=".InvestmentActivity"
+            android:name=".presentation.activities.InvestmentActivity"
             android:exported="false" />
         <activity
-            android:name=".LogActivity"
+            android:name=".presentation.activities.LogActivity"
             android:exported="false"
             android:label="@string/title_activity_log"
             android:theme="@style/Theme.Finances.NoActionBar" />
         <activity
-            android:name=".TestActivity"
+            android:name=".presentation.activities.TestActivity"
             android:exported="false" />
         <activity
-            android:name=".AddItemActivity"
+            android:name=".presentation.activities.AddItemActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".FullPriceShopActivity"
+            android:name=".presentation.activities.FullPriceShopActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".EventsActivity"
+            android:name=".presentation.activities.EventsActivity"
             android:exported="false" />
         <activity
-            android:name=".BankActivity"
+            android:name=".presentation.activities.BankActivity"
             android:exported="false" />
         <activity
-            android:name=".MenuActivity"
+            android:name=".presentation.activities.MenuActivity"
             android:exported="false"
             android:theme="@style/Theme.Finances.NoActionBar" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".presentation.activities.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

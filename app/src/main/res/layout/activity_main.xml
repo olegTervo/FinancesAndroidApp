@@ -5,7 +5,7 @@
     android:id="@+id/Main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.activities.MainActivity">
 
     <ImageButton
         android:id="@+id/SettingsButtonMain"
@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.example.finances.views.LinearGraph
+    <com.example.finances.presentation.views.LinearGraph
         android:id="@+id/graph"
         android:layout_width="0dp"
         android:layout_height="370dp"
