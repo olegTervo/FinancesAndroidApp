@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ScrollView;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.R;
 import com.example.finances.domain.services.InvestmentsService;
 import com.example.finances.presentation.views.MyEasyTable;

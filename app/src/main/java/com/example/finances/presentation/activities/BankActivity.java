@@ -8,11 +8,11 @@ import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.finances.infrastructure.Database.helpers.AccountHelper;
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.LoanHelper;
-import com.example.finances.infrastructure.Database.helpers.ValueDateHelper;
-import com.example.finances.infrastructure.Database.models.LoanDao;
+import com.example.finances.domain.interfaces.IAccountRepository;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
+import com.example.finances.frameworks_and_drivers.database.loan.LoanDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ValueDateType;
 import com.example.finances.presentation.views.MyEasyTable;
@@ -20,14 +20,17 @@ import com.example.finances.presentation.views.MyEasyTable;
 import java.util.ArrayList;
 
 public class BankActivity extends BaseActivity {
+    private IAccountRepository accountRepository;
     private DatabaseHelper db;
+
     private int BankMoney;
     private MyEasyTable DataTable;
 
     private ArrayList<LoanDao> Loans;
 
-    public BankActivity() {
+    public BankActivity(IAccountRepository accountRepository) {
         this.db = new DatabaseHelper(this);
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -45,10 +48,10 @@ public class BankActivity extends BaseActivity {
     }
 
     private void getData() {
-        if(!AccountHelper.AccountExists(db, 1))
-            AccountHelper.Initialize(db);
+        if(!accountRepository.Exists(1))
+            accountRepository.Initialize();
 
-        this.BankMoney = AccountHelper.GetMoney(db, 1);
+        this.BankMoney = accountRepository.GetMoney(1);
         this.Loans = LoanHelper.GetUnpaidLoans(db);
     }
 
@@ -101,7 +104,7 @@ public class BankActivity extends BaseActivity {
                             }
                         }
                         else {
-                            added = AccountHelper.PutMoney(db, 1, value, "Extra money") != -1;
+                            added = accountRepository.PutMoney(1, value, "Extra money") != -1;
                             ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
                             value = 0;
                         }

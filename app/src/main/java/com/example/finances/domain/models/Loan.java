@@ -1,6 +1,6 @@
 package com.example.finances.domain.models;
 
-import com.example.finances.infrastructure.Database.models.OperationDao;
+import com.example.finances.frameworks_and_drivers.database.operation.OperationDao;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

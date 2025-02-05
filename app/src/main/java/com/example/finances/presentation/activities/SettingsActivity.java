@@ -6,8 +6,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.VariablesHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.variables.VariablesHelper;
 import com.example.finances.R;
 import com.example.finances.domain.enums.VariableType;
 

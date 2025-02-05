@@ -1,16 +1,16 @@
 package com.example.finances.domain.services;
 
-import com.example.finances.infrastructure.Api.ApiClient;
-import com.example.finances.infrastructure.Api.ApiInterface;
-import com.example.finances.infrastructure.Api.models.CoinListDto;
-import com.example.finances.infrastructure.Api.models.CoinMarketCap.Datum;
-import com.example.finances.infrastructure.Database.helpers.ApiHelper;
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.InvestmentHelper;
-import com.example.finances.infrastructure.Database.helpers.PriceHelper;
-import com.example.finances.infrastructure.Database.helpers.ValueDateHelper;
-import com.example.finances.infrastructure.Database.models.ApiDao;
-import com.example.finances.infrastructure.common.interfaces.IApiCallback;
+import com.example.finances.interface_adapters.api.ApiClient;
+import com.example.finances.interface_adapters.api.ApiInterface;
+import com.example.finances.interface_adapters.api.models.CoinListDto;
+import com.example.finances.interface_adapters.api.models.CoinMarketCap.Datum;
+import com.example.finances.frameworks_and_drivers.database.api.ApiHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
+import com.example.finances.frameworks_and_drivers.database.price.PriceHelper;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
+import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
+import com.example.finances.interface_adapters.common.interfaces.IApiCallback;
 import com.example.finances.domain.enums.ApiType;
 import com.example.finances.domain.enums.InvestmentType;
 import com.example.finances.domain.enums.PriceType;

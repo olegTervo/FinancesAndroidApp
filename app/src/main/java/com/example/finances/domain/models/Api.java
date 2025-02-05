@@ -1,6 +1,6 @@
 package com.example.finances.domain.models;
 
-import com.example.finances.infrastructure.Database.models.ApiDao;
+import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
 import com.example.finances.domain.enums.ApiType;
 
 public class Api {

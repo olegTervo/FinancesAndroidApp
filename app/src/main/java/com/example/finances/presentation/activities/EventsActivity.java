@@ -8,9 +8,9 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.LoanHelper;
-import com.example.finances.infrastructure.Database.helpers.OperationHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
+import com.example.finances.frameworks_and_drivers.database.operation.OperationHelper;
 import com.example.finances.R;
 import com.example.finances.presentation.views.MyEasyTable;
 

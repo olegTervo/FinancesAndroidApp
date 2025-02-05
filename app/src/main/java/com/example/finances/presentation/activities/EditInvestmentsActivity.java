@@ -5,11 +5,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.InvestmentHelper;
-import com.example.finances.infrastructure.Database.helpers.PriceHelper;
-import com.example.finances.infrastructure.Database.helpers.ValueDateHelper;
-import com.example.finances.infrastructure.Database.models.InvestmentDao;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
+import com.example.finances.frameworks_and_drivers.database.price.PriceHelper;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.PriceType;
 import com.example.finances.domain.enums.ValueDateType;

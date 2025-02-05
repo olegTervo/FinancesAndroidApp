@@ -1,6 +1,6 @@
 package com.example.finances.domain.models;
 
-import com.example.finances.infrastructure.Database.models.InvestmentDao;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
 import com.example.finances.domain.enums.InvestmentType;
 
 import java.time.LocalDate;

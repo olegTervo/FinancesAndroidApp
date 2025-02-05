@@ -1,14 +1,14 @@
 package com.example.finances.presentation.activities;
 
-import static com.example.finances.infrastructure.Database.helpers.ShopHelper.GetShopId;
-import static com.example.finances.infrastructure.Database.helpers.ShopItemHelper.CreateItem;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopId;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.CreateItem;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.R;
 
 public class AddItemActivity extends BaseActivity {

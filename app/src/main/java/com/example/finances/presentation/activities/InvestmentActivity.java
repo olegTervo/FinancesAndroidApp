@@ -7,10 +7,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.ValueDateHelper;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
 import com.example.finances.R;
-import com.example.finances.infrastructure.common.interfaces.IApiCallback;
+import com.example.finances.interface_adapters.common.interfaces.IApiCallback;
 import com.example.finances.domain.enums.ValueDateType;
 import com.example.finances.domain.models.HistoryPrice;
 import com.example.finances.domain.models.ValueDate;

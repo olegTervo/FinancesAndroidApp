@@ -1,12 +1,12 @@
 package com.example.finances.presentation.activities;
 
-import static com.example.finances.infrastructure.Database.helpers.AccountHelper.GetMoney;
-import static com.example.finances.infrastructure.Database.helpers.AccountHelper.PutMoney;
-import static com.example.finances.infrastructure.Database.helpers.ShopHelper.GetShopAccountNumber;
-import static com.example.finances.infrastructure.Database.helpers.ShopHelper.GetShopId;
-import static com.example.finances.infrastructure.Database.helpers.ShopItemHelper.AddItems;
-import static com.example.finances.infrastructure.Database.helpers.ShopItemHelper.DeleteItem;
-import static com.example.finances.infrastructure.Database.helpers.ShopItemHelper.GetShopItems;
+import static com.example.finances.frameworks_and_drivers.database.account.AccountHelper.GetMoney;
+import static com.example.finances.frameworks_and_drivers.database.account.AccountHelper.PutMoney;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopAccountNumber;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopId;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.AddItems;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.DeleteItem;
+import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.GetShopItems;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,9 +20,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.finances.infrastructure.Database.helpers.DatabaseHelper;
-import com.example.finances.infrastructure.Database.helpers.ValueDateHelper;
-import com.example.finances.infrastructure.Database.models.ShopItemDao;
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
+import com.example.finances.frameworks_and_drivers.database.shop.ShopItemDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ValueDateType;
 
