@@ -2,13 +2,15 @@ package com.example.finances.interface_adapters.repository;
 
 import com.example.finances.domain.interfaces.IAccountRepository;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
-import com.example.finances.frameworks_and_drivers.database.account.AccountDatabase;
+
+import javax.inject.Inject;
 
 public class AccountRepository implements IAccountRepository {
     private final AccountDao accountDao;
 
-    public AccountRepository(AccountDatabase db) {
-        accountDao = new AccountDao(db.getWritableDatabase());
+    @Inject
+    public AccountRepository(AccountDao dao) {
+        accountDao = dao;
     }
 
     @Override

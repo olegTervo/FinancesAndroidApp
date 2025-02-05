@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.finances.domain.interfaces.IAccountRepository;
+import com.example.finances.domain.services.BankService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
 import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
@@ -19,18 +20,24 @@ import com.example.finances.presentation.views.MyEasyTable;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class BankActivity extends BaseActivity {
-    private IAccountRepository accountRepository;
     private DatabaseHelper db;
 
-    private int BankMoney;
-    private MyEasyTable DataTable;
+    @Inject
+    BankService bankService;
 
-    private ArrayList<LoanDao> Loans;
+    private int bankMoney;
+    private ArrayList<LoanDao> loans;
 
-    public BankActivity(IAccountRepository accountRepository) {
+    private MyEasyTable dataTable;
+
+    public BankActivity() {
         this.db = new DatabaseHelper(this);
-        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -48,16 +55,13 @@ public class BankActivity extends BaseActivity {
     }
 
     private void getData() {
-        if(!accountRepository.Exists(1))
-            accountRepository.Initialize();
-
-        this.BankMoney = accountRepository.GetMoney(1);
-        this.Loans = LoanHelper.GetUnpaidLoans(db);
+        this.bankMoney = bankService.GetBankMoney();
+        this.loans = LoanHelper.GetUnpaidLoans(db);
     }
 
     private void setData() {
         TextView bankMoney = findViewById(R.id.BankMoney);
-        bankMoney.setText(this.BankMoney + "€");
+        bankMoney.setText(this.bankMoney + "€");
 
         ConstraintLayout TableView = findViewById(R.id.ValuesView);
         int tableId = 1101001;
@@ -65,9 +69,9 @@ public class BankActivity extends BaseActivity {
         if(TableView.getViewById(tableId) != null)
             TableView.removeView(findViewById(tableId));
 
-        this.DataTable = new MyEasyTable(this, this.Loans.toArray(), tableId, 3);
-        this.DataTable.addRow(new String[] {"Loans: " + this.Loans.size()});
-        TableView.addView(this.DataTable);
+        this.dataTable = new MyEasyTable(this, this.loans.toArray(), tableId, 3);
+        this.dataTable.addRow(new String[] {"Loans: " + this.loans.size()});
+        TableView.addView(this.dataTable);
     }
 
     private void setButtons() {
@@ -88,12 +92,12 @@ public class BankActivity extends BaseActivity {
                     boolean added = true;
 
                     while (value > 0 && added) {
-                        if(BankActivity.this.Loans.size()>0){
-                            LoanDao loan = BankActivity.this.Loans.get(BankActivity.this.Loans.size()-1);
+                        if(BankActivity.this.loans.size()>0){
+                            LoanDao loan = BankActivity.this.loans.get(BankActivity.this.loans.size()-1);
 
                             if(loan.unpaid < value){
                                 added = LoanHelper.PayLoan(db, loan.id, loan.unpaid);
-                                BankActivity.this.Loans.remove(BankActivity.this.Loans.size()-1);
+                                BankActivity.this.loans.remove(BankActivity.this.loans.size()-1);
                                 value -= loan.unpaid;
                                 ValueDateHelper.increaseTopValue(db, loan.unpaid*(-1), ValueDateType.DailyGrowth);
                             }
@@ -104,7 +108,7 @@ public class BankActivity extends BaseActivity {
                             }
                         }
                         else {
-                            added = accountRepository.PutMoney(1, value, "Extra money") != -1;
+                            added = bankService.AddMoneyToBank(value) != -1;
                             ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
                             value = 0;
                         }

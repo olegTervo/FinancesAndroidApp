@@ -6,11 +6,14 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class AccountDao {
-    private final SQLiteDatabase db;
+import javax.inject.Inject;
 
-    public AccountDao(SQLiteDatabase db) {
-        this.db = db;
+public class AccountDao {
+    private final AccountDatabase accountDatabase;
+
+    @Inject
+    public AccountDao(AccountDatabase db) {
+        this.accountDatabase = db;
     }
 
     public void Initialize() {
@@ -18,6 +21,7 @@ public class AccountDao {
     }
 
     public boolean AccountExists(int account) {
+        SQLiteDatabase db = accountDatabase.getReadableDatabase();
         boolean res = false;
 
         String getScript = String.format("SELECT " + ACCOUNT_ID_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + ACCOUNT_ID_COLUMN_NAME + " = %s", account);
@@ -29,6 +33,7 @@ public class AccountDao {
     }
 
     public int GetAccountNumber(String name) {
+        SQLiteDatabase db = accountDatabase.getReadableDatabase();
         int res = -1;
 
         String getScript = String.format("SELECT " + ACCOUNT_ID_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + ACCOUNT_TABLE_NAME_COLUMN_NAME + " = '%s'", name);
@@ -42,6 +47,7 @@ public class AccountDao {
     }
 
     public boolean OpenBankAccount(String name, int type) {
+        SQLiteDatabase db = accountDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(ACCOUNT_TABLE_TYPE_COLUMN_NAME, type);
@@ -56,6 +62,7 @@ public class AccountDao {
     }
 
     public int GetMoney(int account) {
+        SQLiteDatabase db = accountDatabase.getReadableDatabase();
         int result = 0;
 
         String getScript = String.format("SELECT " + ACCOUNT_TABLE_MONEY_COLUMN_NAME + " FROM " + ACCOUNT_TABLE_NAME + " WHERE " + ACCOUNT_ID_COLUMN_NAME + " = %s", account);
@@ -69,6 +76,7 @@ public class AccountDao {
     }
 
     public long PutMoney(int account, int amount, String message) {
+        SQLiteDatabase db = accountDatabase.getWritableDatabase();
         int current = GetMoney(account);
 
         ContentValues cv = new ContentValues();
