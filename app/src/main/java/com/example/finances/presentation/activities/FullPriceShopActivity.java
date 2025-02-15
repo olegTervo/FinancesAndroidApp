@@ -1,13 +1,5 @@
 package com.example.finances.presentation.activities;
 
-import static com.example.finances.frameworks_and_drivers.database.account.AccountHelper.GetMoney;
-import static com.example.finances.frameworks_and_drivers.database.account.AccountHelper.PutMoney;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopAccountNumber;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopId;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.AddItems;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.DeleteItem;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.GetShopItems;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,16 +12,27 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.finances.domain.models.ShopItem;
+import com.example.finances.domain.services.BankService;
+import com.example.finances.domain.services.ShopService;
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
-import com.example.finances.frameworks_and_drivers.database.shop.ShopItemDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ValueDateType;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class FullPriceShopActivity extends BaseActivity {
     public static final String FullPriceShopName = "FullPriceShop";
+
+    @Inject
+    BankService bankService;
+    @Inject
+    ShopService shopService;
+    @Inject
+    VariablesService variablesService;
 
     private DatabaseHelper db;
     private boolean sellMode;
@@ -59,8 +62,7 @@ public class FullPriceShopActivity extends BaseActivity {
     }
 
     private void SetData() {
-        int accountNumber = GetShopAccountNumber(db, FullPriceShopName);
-        int money = GetMoney(db, accountNumber);
+        int money = bankService.GetShopMoney();
 
         TextView shopMoney = findViewById(R.id.ShopMoney);
         shopMoney.setText(money + "€");
@@ -68,13 +70,13 @@ public class FullPriceShopActivity extends BaseActivity {
     }
 
     private void SetItems() {
-        int shopId = GetShopId(db, FullPriceShopName);
-        ArrayList<ShopItemDao> items = GetShopItems(db, shopId);
+        long shopId = shopService.GetShopId(FullPriceShopName);
+        ArrayList<ShopItem> items = shopService.GetShopItems(shopId);
 
         LinearLayout itemsList = findViewById(R.id.Items);
         itemsList.removeAllViews();
 
-        for (ShopItemDao item : items) {
+        for (ShopItem item : items) {
             LinearLayout row = new LinearLayout(this);
             row.setPadding(0, 0, 0, 5);
             row.setVerticalGravity(Gravity.CENTER_VERTICAL);
@@ -126,13 +128,13 @@ public class FullPriceShopActivity extends BaseActivity {
         });
     }
 
-    private static Button CreateDeleteButton(FullPriceShopActivity context, ShopItemDao item) {
+    private Button CreateDeleteButton(FullPriceShopActivity context, ShopItem item) {
         Button delete = new Button(context);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    boolean changed = DeleteItem(context.db, item.id);
+                    boolean changed = shopService.DeleteShopItem(item.getId());
 
                     if(!changed)
                         Log(context, "Failed to delete item, returned false");
@@ -155,7 +157,7 @@ public class FullPriceShopActivity extends BaseActivity {
         return delete;
     }
 
-    private static TextView CreateTextItem(FullPriceShopActivity context, ShopItemDao item) {
+    private static TextView CreateTextItem(FullPriceShopActivity context, ShopItem item) {
         TextView itemText = new TextView(context);
         itemText.setText(item.toString());
         itemText.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -165,7 +167,7 @@ public class FullPriceShopActivity extends BaseActivity {
         return itemText;
     }
 
-    private static LinearLayout CreateAddInput(FullPriceShopActivity context, ShopItemDao item, boolean sellMode) {
+    private LinearLayout CreateAddInput(FullPriceShopActivity context, ShopItem item, boolean sellMode) {
         LinearLayout result = new LinearLayout(context);
         result.setVerticalGravity(Gravity.BOTTOM);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -193,20 +195,20 @@ public class FullPriceShopActivity extends BaseActivity {
                     boolean changed = false;
 
                     if(sellMode)
-                        changed = AddItems(context.db, item.id, val);
+                        changed = shopService.ChangeShopItemAmount(item.getId(), val);
                     else
-                        changed = AddItems(context.db, item.id, -val);
+                        changed = shopService.ChangeShopItemAmount(item.getId(), -val);
 
                     if(changed) {
                         if (sellMode) {
-                            int price = (int) Math.round(item.buyPrice);
-                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), -val*price, "selling " + item.name) != -1
-                                && ValueDateHelper.increaseTopValue(context.db, val*price, ValueDateType.DailyGrowth);
+                            int price = (int) Math.round(item.getBuyPrice());
+                            changed = bankService.AddMoneyToShop(-val*price, "selling " + item.getName()) != -1
+                                && variablesService.increaseTopValue(val*price, ValueDateType.DailyGrowth);
                         }
                         else {
-                            int price = (int) Math.round(item.sellPrice);
-                            changed = PutMoney(context.db, GetShopAccountNumber(context.db, FullPriceShopName), val*price, "buying " + item.name) != -1
-                                && ValueDateHelper.increaseTopValue(context.db, -val*price, ValueDateType.DailyGrowth);
+                            int price = (int) Math.round(item.getSellPrice());
+                            changed = bankService.AddMoneyToShop( val*price, "buying " + item.getName()) != -1
+                                && variablesService.increaseTopValue(-val*price, ValueDateType.DailyGrowth);
                         }
                     }
 

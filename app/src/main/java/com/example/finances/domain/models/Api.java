@@ -16,14 +16,30 @@ public class Api {
         this.key = key;
     }
 
-    public Api(ApiDao dao) {
-        this.id = dao.Id;
-        this.name = dao.Name;
-        this.link = dao.Link;
-        this.key = dao.Key;
+    public Api(Api other) {
+        this.id = other.getId();
+        this.name = other.getName();
+        this.link = other.getLink();
+        this.key = other.getKey();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
     public ApiType getType() {
         return ApiType.fromInt(this.id);
+    }
+
+    public String getLink() {
+        return this.link;
     }
 }

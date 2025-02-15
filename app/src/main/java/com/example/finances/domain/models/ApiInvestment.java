@@ -6,10 +6,12 @@ import java.time.LocalDate;
 
 public class ApiInvestment extends Investment {
     private String apiSpecificInvestmentName;
+    private int apiId;
     private Api api;
 
     public ApiInvestment(Investment investment, Api api, String name) {
         super(investment);
+        this.apiId = api.getId();
         this.api = api;
         this.apiSpecificInvestmentName = name;
     }
@@ -17,7 +19,21 @@ public class ApiInvestment extends Investment {
     public ApiInvestment(
             int investmentId,
             String investmentName,
-            int amount,
+            float amount,
+            LocalDate openDate,
+            LocalDate modified,
+            InvestmentType type,
+            int apiId,
+            String apiSpecificInvestmentName) {
+        super(investmentId, investmentName, amount, openDate, modified, type);
+        this.apiId = apiId;
+        this.apiSpecificInvestmentName = apiSpecificInvestmentName;
+    }
+
+    public ApiInvestment(
+            int investmentId,
+            String investmentName,
+            float amount,
             LocalDate openDate,
             LocalDate modified,
             InvestmentType type,
@@ -30,13 +46,18 @@ public class ApiInvestment extends Investment {
             String name) {
 
         super(investmentId, investmentName, amount, openDate, modified, type);
+        this.apiId = apiId;
         this.api = new Api(apiId, apiName, link, key);
         this.apiSpecificInvestmentName = name;
 
     }
 
-    public int getId() {
+    public long getId() {
         return super.getId();
+    }
+
+    public int getApiId() {
+        return apiId;
     }
 
     public Api getApi() {

@@ -11,7 +11,7 @@ public class Loan {
     private int rate;
     private LocalDate openDate;
 
-    private ArrayList<OperationDao> operations;
+    private ArrayList<Operation> operations;
 
     public Loan(int id, int unpaid, int rate, LocalDate openDate) {
         this.id = id;
@@ -22,7 +22,7 @@ public class Loan {
         this.operations = new ArrayList<>();
     }
 
-    public void addOperations(ArrayList<OperationDao> operationsToAdd) {
+    public void addOperations(ArrayList<Operation> operationsToAdd) {
         this.operations.addAll(operationsToAdd);
     }
 
@@ -31,9 +31,25 @@ public class Loan {
         String res = "";
         res += "id:" + id + "|" + unpaid + "€|" + openDate.toString();
 
-        for(OperationDao operation : operations)
+        for(Operation operation : operations)
             res += "\n" + operation.toString();
 
         return res;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+
+    public int getUnpaid(){
+        return this.unpaid;
+    }
+
+    public int getRate(){
+        return this.rate;
+    }
+
+    public LocalDate getOpenDate(){
+        return this.openDate;
     }
 }

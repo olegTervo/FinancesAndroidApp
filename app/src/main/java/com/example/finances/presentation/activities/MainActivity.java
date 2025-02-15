@@ -14,18 +14,16 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.finances.domain.interfaces.IApiRepository;
+import com.example.finances.domain.models.Api;
+import com.example.finances.domain.models.DailyGrowth;
+import com.example.finances.domain.services.BankService;
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.interface_adapters.api.ApiClient;
 import com.example.finances.interface_adapters.api.ApiInterface;
 import com.example.finances.interface_adapters.api.models.CoinListDto;
 import com.example.finances.interface_adapters.api.models.CoinMarketCap.Datum;
-import com.example.finances.frameworks_and_drivers.database.account.AccountHelper;
-import com.example.finances.frameworks_and_drivers.database.api.ApiHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.shop.ShopHelper;
-import com.example.finances.frameworks_and_drivers.database.variables.VariablesHelper;
-import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
-import com.example.finances.frameworks_and_drivers.database.daily_growth.DailyGrowthDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ApiType;
 import com.example.finances.domain.enums.CryptocurrencyType;
@@ -41,14 +39,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity {
+    @Inject
+    IApiRepository apiRepository;
+    @Inject
+    BankService bankService;
+    @Inject
+    VariablesService variablesService;
+
     private DatabaseHelper db;
     private ApiInterface currenciesApi;
-    private ApiDao currenciesApiParameters;
+    private Api currenciesApiParameters;
 
     private int DailyGrowth;
     private int Target;
@@ -63,8 +70,8 @@ public class MainActivity extends BaseActivity {
 
         db = new DatabaseHelper(this);
         TonPrice = 0;
-        currenciesApiParameters = ApiHelper.GetApi(db, ApiType.CoinMarketCap);
-        currenciesApi = ApiClient.getClient(currenciesApiParameters.Link).create(ApiInterface.class);
+        currenciesApiParameters = apiRepository.GetApi(ApiType.CoinMarketCap);
+        currenciesApi = ApiClient.getClient(currenciesApiParameters.getLink()).create(ApiInterface.class);
         //currenciesApi = ApiClient.getClient("https://sandbox-api.coinmarketcap.com").create(ApiInterface.class);
 
         MakeButtonHandlers();
@@ -82,7 +89,7 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        String key = this.currenciesApiParameters.Key;
+        String key = this.currenciesApiParameters.getKey();
         Call<CoinListDto> call = currenciesApi.getCoins(key, "1", "100", "EUR");
         call.enqueue(new Callback<CoinListDto>() {
             @Override
@@ -151,7 +158,7 @@ public class MainActivity extends BaseActivity {
                 textView.setText("");
 
                 try {
-                    boolean added = ValueDateHelper.increaseTopValue(db, Float.parseFloat(text), ValueDateType.DailyGrowth);
+                    boolean added = variablesService.increaseTopValue(Float.parseFloat(text), ValueDateType.DailyGrowth);
 
                     if(!added)
                         ShowError(view, "Failed to insert into database, returned false");
@@ -185,29 +192,29 @@ public class MainActivity extends BaseActivity {
     public void drawGraph() {
         LinearGraph graph = findViewById(R.id.graph);
 
-        ValueDateHelper.sync(db);
+        variablesService.sync();
         ArrayList<ValueDate> values = new ArrayList<>();
-        values.addAll(ValueDateHelper.getValues(db, ValueDateType.DailyGrowth));
+        values.addAll(variablesService.getValues(ValueDateType.DailyGrowth));
         Collections.reverse(values);
-        float target = this.Target - ValueDateHelper.getFirst(db, ValueDateType.Investments).value;
+        float target = this.Target - variablesService.getFirst(ValueDateType.Investments).value;
         graph.setValues(values, target, 150, -values.get(values.size()-1).value);
     }
 
     private void getData() {
-        this.DailyGrowth = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.DailyGrowth));
-        this.Target = VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Target));
-        this.Actives = (int) Math.round(VariablesHelper.getVariable(db, VariableType.toInt(VariableType.Actives)) * this.TonPrice);
+        this.DailyGrowth = variablesService.getVariable(VariableType.toInt(VariableType.DailyGrowth));
+        this.Target = variablesService.getVariable(VariableType.toInt(VariableType.Target));
+        this.Actives = (int) Math.round(variablesService.getVariable(VariableType.toInt(VariableType.Actives)) * this.TonPrice);
     }
 
     private void setData() {
         TableLayout valueTable = findViewById(R.id.mainTable);
         valueTable.removeAllViews();
 
-        DailyGrowthDao last = (DailyGrowthDao) ValueDateHelper.getFirst(db, ValueDateType.DailyGrowth);
+        DailyGrowth last = (DailyGrowth) variablesService.getFirst(ValueDateType.DailyGrowth);
         float lastVal = 0;
         if (last != null) lastVal = last.value;
 
-        HistoryPrice actives = (HistoryPrice) ValueDateHelper.getFirst(db, ValueDateType.Investments);
+        HistoryPrice actives = (HistoryPrice) variablesService.getFirst(ValueDateType.Investments);
         float lastActives = 0;
         if (actives != null) lastActives = actives.value;
 
@@ -215,9 +222,9 @@ public class MainActivity extends BaseActivity {
                 ? (int) DAYS.between(LocalDate.now(), LocalDate.now().withDayOfMonth(20))
                 : (int) DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(1).withDayOfMonth(20));
         this.Balance = lastVal + this.DailyGrowth * daysToIncome;
-        int bank = AccountHelper.GetMoney(db, 1);
-        int shop = AccountHelper.GetMoney(db,  ShopHelper.GetShopAccountNumber(db, FullPriceShopName));
-        VariablesHelper.setVariable(db, VariableType.toInt(VariableType.Balance), Math.round(this.Balance));
+        int bank = bankService.GetBankMoney();
+        int shop = bankService.GetShopMoney();
+        variablesService.setVariable(VariableType.toInt(VariableType.Balance), Math.round(this.Balance));
 
         addRow(new String[] {"\t+: " + String.format("%.2f", this.Balance),     "\t\t- : " + String.format("%.2f", lastActives),    "\t\t€ : " + bank}, valueTable);
         addRow(new String[] {"\tLast: " + String.format("%.2f", lastVal),       "\t\tTarget: " + this.Target,                       "\t\t€+ : " + String.format("%.2f", (this.Balance + bank))}, valueTable);

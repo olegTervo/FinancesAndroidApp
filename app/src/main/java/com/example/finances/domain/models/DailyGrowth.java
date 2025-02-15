@@ -1,13 +1,11 @@
-package com.example.finances.frameworks_and_drivers.database.daily_growth;
-
-import com.example.finances.domain.models.ValueDate;
+package com.example.finances.domain.models;
 
 import java.time.LocalDate;
 
-public class DailyGrowthDao extends ValueDate implements Cloneable {
+public class DailyGrowth extends ValueDate implements Cloneable {
     public int id;
 
-    public DailyGrowthDao(int id, float value, LocalDate date) {
+    public DailyGrowth(int id, float value, LocalDate date) {
         super(value, date);
         this.id = id;
     }

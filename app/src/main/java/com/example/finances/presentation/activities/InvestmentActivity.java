@@ -7,8 +7,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
 import com.example.finances.R;
 import com.example.finances.interface_adapters.common.interfaces.IApiCallback;
 import com.example.finances.domain.enums.ValueDateType;
@@ -22,31 +22,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 public class InvestmentActivity extends BaseActivity {
-    private DatabaseHelper db;
-    private InvestmentsService investmentService;
     private List<HistoryPrice> investments;
+
+    @Inject
+    InvestmentsService investmentService;
+    @Inject
+    VariablesService variablesService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_investment);
-
-        this.db = new DatabaseHelper(this);
-        this.investmentService = new InvestmentsService(this.db);
         setListeners();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         this.investmentService.sync(getCallback());
     }
 
     public void refresh() {
-        this.investments = ValueDateHelper
-                .getValues(db, ValueDateType.Investments)
+        this.investments = variablesService
+                .getValues(ValueDateType.Investments)
                 .stream()
                 .map(v -> (HistoryPrice) v)
                 .collect(Collectors.toList());

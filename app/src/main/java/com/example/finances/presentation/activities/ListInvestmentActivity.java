@@ -10,10 +10,14 @@ import com.example.finances.R;
 import com.example.finances.domain.services.InvestmentsService;
 import com.example.finances.presentation.views.MyEasyTable;
 
+import javax.inject.Inject;
+
 public class ListInvestmentActivity extends AppCompatActivity {
     private DatabaseHelper db;
-    private InvestmentsService service;
     private Object[] investments;
+
+    @Inject
+    InvestmentsService investmentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +25,7 @@ public class ListInvestmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_investment);
 
         this.db = new DatabaseHelper(this);
-        this.service = new InvestmentsService(db);
-        this.investments = service.getInvestments().toArray();
+        this.investments = investmentService.getInvestments().toArray();
         setData();
     }
 

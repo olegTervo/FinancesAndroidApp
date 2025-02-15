@@ -8,13 +8,17 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.finances.domain.services.BankService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
-import com.example.finances.frameworks_and_drivers.database.operation.OperationHelper;
 import com.example.finances.R;
 import com.example.finances.presentation.views.MyEasyTable;
 
+import javax.inject.Inject;
+
 public class EventsActivity extends BaseActivity {
+    @Inject
+    BankService bankService;
+
     private DatabaseHelper db;
 
     private int selectedAccount;
@@ -55,19 +59,19 @@ public class EventsActivity extends BaseActivity {
     private void getData() {
         switch (this.selectedType){
             case 0:
-                this.operations = OperationHelper.GetAccountOperations(this.db, this.selectedAccount).toArray();
+                this.operations = bankService.GetAccountOperations(this.selectedAccount).toArray();
                 break;
             case 1:
-                this.operations = OperationHelper.GetAccountOperations(this.db, this.selectedAccount).stream().filter(o -> o.amount > 0).toArray();
+                this.operations = bankService.GetAccountOperations(this.selectedAccount).stream().filter(o -> o.getAmount() > 0).toArray();
                 break;
             case 2:
-                this.operations = OperationHelper.GetAccountOperations(this.db, this.selectedAccount).stream().filter(o -> o.amount < 0).toArray();
+                this.operations = bankService.GetAccountOperations(this.selectedAccount).stream().filter(o -> o.getAmount() < 0).toArray();
                 break;
             case 3:
-                this.operations = LoanHelper.GetLoans(this.db).toArray();
+                this.operations = bankService.GetLoans().toArray();
                 break;
             case 4:
-                this.operations = OperationHelper.GetAccountOperations(this.db, this.selectedAccount).stream().filter(o -> o.type == 3).toArray();
+                this.operations = bankService.GetAccountOperations(this.selectedAccount).stream().filter(o -> o.getType() == 3).toArray();
                 break;
             default:
                 this.operations = new Object[0];

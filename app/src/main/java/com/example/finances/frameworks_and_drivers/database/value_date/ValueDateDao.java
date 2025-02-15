@@ -1,78 +1,49 @@
 package com.example.finances.frameworks_and_drivers.database.value_date;
 
+import static com.example.finances.frameworks_and_drivers.database.value_date.ValueDateDatabase.*;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.daily_growth.DailyGrowthHelper;
-import com.example.finances.frameworks_and_drivers.database.variables.VariablesHelper;
-import com.example.finances.frameworks_and_drivers.database.daily_growth.DailyGrowthDao;
 import com.example.finances.domain.enums.ValueDateType;
+import com.example.finances.domain.models.DailyGrowth;
 import com.example.finances.domain.models.HistoryPrice;
 import com.example.finances.domain.models.ValueDate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class ValueDateHelper {
+import javax.inject.Inject;
 
+public class ValueDateDao {
+    private final ValueDateDatabase valueDateDatabase;
 
-    public static final String VALUE_DATE_TABLE_NAME = "ValueDate";
-    public static final String VALUE_DATE_ID_COLUMN_NAME = "Id";
-    public static final String VALUE_DATE_TYPE_COLUMN_NAME = "Type";
-    public static final String VALUE_DATE_VALUE_COLUMN_NAME = "Value";
-    public static final String VALUE_DATE_DATE_COLUMN_NAME = "Date";
-
-    public static String CreateTableString() {
-        String initialString = "CREATE TABLE "
-                + VALUE_DATE_TABLE_NAME
-                + " (" + VALUE_DATE_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + VALUE_DATE_TYPE_COLUMN_NAME + " INTEGER NOT NULL, "
-                + VALUE_DATE_VALUE_COLUMN_NAME +" FLOAT NOT NULL, "
-                + VALUE_DATE_DATE_COLUMN_NAME +" TIMESTAMP DEFAULT CURRENT_TIMESTAMP );\n";
-
-        return initialString;
+    @Inject
+    public ValueDateDao(ValueDateDatabase valueDateDatabase) {
+        this.valueDateDatabase = valueDateDatabase;
     }
 
-    public static String DropTableString() {
-        String res = "DROP TABLE " + VALUE_DATE_TABLE_NAME + ";\n";
-        return res;
-    }
-
-    public static void MigrateDailyGrowthTable(SQLiteDatabase db) {
-        String res = "INSERT INTO " + VALUE_DATE_TABLE_NAME +
-                " (" + VALUE_DATE_TYPE_COLUMN_NAME + ", " +
-                    VALUE_DATE_VALUE_COLUMN_NAME + ", " +
-                    VALUE_DATE_DATE_COLUMN_NAME + ")" +
-                " SELECT " + ValueDateType.toInt(ValueDateType.DailyGrowth) + ", " +
-                    DailyGrowthHelper.FINANCES_TABLE_VALUE_COLUMN_NAME + ", " +
-                    DailyGrowthHelper.FINANCES_TABLE_DATE_COLUMN_NAME +
-                " FROM " + DailyGrowthHelper.FINANCES_TABLE_NAME + ";";
-        db.execSQL(res);
-    }
-
-    public static boolean sync(DatabaseHelper connection) {
-        DailyGrowthDao top = (DailyGrowthDao) getFirst(connection, ValueDateType.DailyGrowth);
+    public boolean sync(int daily) {
+        DailyGrowth top = (DailyGrowth) getFirst(ValueDateType.DailyGrowth);
 
         if(top != null) {
-            int daily = VariablesHelper.getVariable(connection, 1);
             LocalDate last = top.date;
 
             while(LocalDate.now().isAfter(last)) {
                 last = last.plusDays(1);
-                create(connection, daily, last, ValueDateType.DailyGrowth);
+                create(daily, last, ValueDateType.DailyGrowth);
             }
         }
         else
-            create(connection, 0, LocalDate.now(), ValueDateType.DailyGrowth);
+            create(0, LocalDate.now(), ValueDateType.DailyGrowth);
 
         return true;
     }
 
-    public static ValueDate getFirst(DatabaseHelper connection, ValueDateType type) {
+    public ValueDate getFirst(ValueDateType type) {
         ValueDate result = null;
-        SQLiteDatabase db = connection.getReadableDatabase();
+        SQLiteDatabase db = valueDateDatabase.getReadableDatabase();
 
         String getScript = "SELECT "
                 + VALUE_DATE_ID_COLUMN_NAME + ", "
@@ -87,7 +58,7 @@ public class ValueDateHelper {
 
         if (reader.moveToFirst())
             if (type.equals(ValueDateType.DailyGrowth))
-                result = new DailyGrowthDao(
+                result = new DailyGrowth(
                         reader.getInt(0)
                         , reader.getFloat(1)
                         , LocalDate.parse(reader.getString(2))
@@ -103,8 +74,8 @@ public class ValueDateHelper {
         return result;
     }
 
-    private static boolean hasAny(DatabaseHelper connection, ValueDateType type) {
-        SQLiteDatabase db = connection.getReadableDatabase();
+    private boolean hasAny(ValueDateType type) {
+        SQLiteDatabase db = valueDateDatabase.getReadableDatabase();
         String getScript = "SELECT " + VALUE_DATE_VALUE_COLUMN_NAME +
                 " FROM " + VALUE_DATE_TABLE_NAME +
                 " WHERE " + VALUE_DATE_TYPE_COLUMN_NAME + " = " + ValueDateType.toInt(type) +
@@ -118,13 +89,13 @@ public class ValueDateHelper {
         return result;
     }
 
-    public static boolean create(DatabaseHelper connection, float number, LocalDate date, ValueDateType type) {
-        SQLiteDatabase db = connection.getWritableDatabase();
+    public boolean create(float number, LocalDate date, ValueDateType type) {
+        SQLiteDatabase db = valueDateDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
         float toPut = number;
 
         if (type.equals(ValueDateType.DailyGrowth)){
-            DailyGrowthDao last = (DailyGrowthDao) ValueDateHelper.getFirst(connection, ValueDateType.DailyGrowth);
+            DailyGrowth last = (DailyGrowth) getFirst(ValueDateType.DailyGrowth);
             float lastVal = 0;
             if (last != null) lastVal = last.value;
 
@@ -143,8 +114,8 @@ public class ValueDateHelper {
         return true;
     }
 
-    public static ArrayList<ValueDate> getValues(DatabaseHelper connection, ValueDateType type) {
-        SQLiteDatabase db = connection.getReadableDatabase();
+    public ArrayList<ValueDate> getValues(ValueDateType type) {
+        SQLiteDatabase db = valueDateDatabase.getReadableDatabase();
         ArrayList<ValueDate> result = new ArrayList<>();
 
         String getScript = "SELECT "
@@ -161,7 +132,7 @@ public class ValueDateHelper {
         if (reader.moveToFirst())
             do {
                 if (type.equals(ValueDateType.DailyGrowth))
-                    result.add(new DailyGrowthDao(
+                    result.add(new DailyGrowth(
                             reader.getInt(0)
                             , reader.getFloat(1)
                             , LocalDate.parse(reader.getString(2))
@@ -178,13 +149,13 @@ public class ValueDateHelper {
         return result;
     }
 
-    public static boolean increaseTopValue(DatabaseHelper connection, float value, ValueDateType type) {
-        ValueDate last = getFirst(connection, type);
+    public boolean increaseTopValue(float value, ValueDateType type) {
+        ValueDate last = getFirst(type);
 
         if(last == null)
             return false;
 
-        SQLiteDatabase db = connection.getWritableDatabase();
+        SQLiteDatabase db = valueDateDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(VALUE_DATE_VALUE_COLUMN_NAME, last.value + value);
@@ -197,13 +168,13 @@ public class ValueDateHelper {
         return true;
     }
 
-    public static void delete(DatabaseHelper connection, ValueDateType type) {
-        SQLiteDatabase db = connection.getWritableDatabase();
+    public void delete(ValueDateType type) {
+        SQLiteDatabase db = valueDateDatabase.getWritableDatabase();
         db.delete(VALUE_DATE_TABLE_NAME, "type=?", new String[] { Integer.toString(ValueDateType.toInt(type)) });
     }
 
-    public static boolean update(DatabaseHelper connection, int id, int value) {
-        SQLiteDatabase db = connection.getWritableDatabase();
+    public boolean update(int id, int value) {
+        SQLiteDatabase db = valueDateDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(VALUE_DATE_VALUE_COLUMN_NAME, value);
@@ -215,5 +186,4 @@ public class ValueDateHelper {
         }
         return true;
     }
-
 }

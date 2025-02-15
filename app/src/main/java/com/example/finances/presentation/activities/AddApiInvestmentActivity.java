@@ -7,16 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.finances.domain.interfaces.IApiRepository;
+import com.example.finances.domain.models.Api;
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.interface_adapters.api.ApiClient;
 import com.example.finances.interface_adapters.api.ApiInterface;
 import com.example.finances.interface_adapters.api.models.CoinListDto;
 import com.example.finances.interface_adapters.api.models.CoinMarketCap.Datum;
-import com.example.finances.frameworks_and_drivers.database.api.ApiHelper;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
-import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ApiType;
 import com.example.finances.domain.enums.ValueDateType;
@@ -26,13 +24,22 @@ import com.example.finances.domain.services.InvestmentsService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddApiInvestmentActivity extends BaseActivity {
     private DatabaseHelper db;
-    private InvestmentsService service;
+
+    @Inject
+    InvestmentsService investmentService;
+    @Inject
+    VariablesService variablesService;
+    // TODO think
+    @Inject
+    IApiRepository apiRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +47,6 @@ public class AddApiInvestmentActivity extends BaseActivity {
         setContentView(R.layout.activity_add_api_investment);
 
         this.db = new DatabaseHelper(this);
-        this.service = new InvestmentsService(db);
         setListeners();
     }
 
@@ -67,24 +73,15 @@ public class AddApiInvestmentActivity extends BaseActivity {
                     return;
                 }
 
-                InvestmentDao toCreate = new InvestmentDao(name.getText().toString(), Float.parseFloat(amount.getText().toString()));
-                long investmentId = InvestmentHelper.CreateInvestment(db, toCreate);
-                boolean passed = ApiHelper.CreateInvestmentApi(db, ApiType.CoinMarketCap, investmentId, apiSpecificName.getText().toString());
+                Investment newInvestment = investmentService.createInvestment(name.getText().toString(), Float.parseFloat(amount.getText().toString()), 0);
+                boolean passed = apiRepository.CreateInvestmentApi(ApiType.CoinMarketCap, newInvestment.getId(), apiSpecificName.getText().toString());
+                float last = 0;
 
-                List<Investment> investmentList = service.getInvestments();
-                List<Investment> filtered = investmentList.stream().filter(i -> i.getId() == investmentId).collect(Collectors.toList());
+                if (newInvestment.getLastPrice() != null)
+                    last = newInvestment.getLastPrice().GetPrice();
 
-                System.out.println(filtered.get(0).toString());
-
-                if (filtered.size() == 1) {
-                    float last = 0;
-
-                    if (filtered.get(0).getLastPrice() != null)
-                        last = filtered.get(0).getLastPrice().GetPrice();
-
-                    float ch = filtered.get(0).getAmount() * last;
-                    passed = passed && ValueDateHelper.increaseTopValue(db, ch, ValueDateType.Investments);
-                }
+                float ch = newInvestment.getAmount() * last;
+                passed = passed && variablesService.increaseTopValue(ch, ValueDateType.Investments);
 
                 if (passed) {
                     ShowConfirmation(view, "Investment saved!", 1000);
@@ -99,9 +96,9 @@ public class AddApiInvestmentActivity extends BaseActivity {
     }
 
     private void getNames() {
-        ApiDao coiMarketApi = ApiHelper.GetApi(db, ApiType.CoinMarketCap);
-        ApiInterface currenciesApi = ApiClient.getClient(coiMarketApi.Link).create(ApiInterface.class);
-        String key = coiMarketApi.Key;
+        Api coiMarketApi = apiRepository.GetApi(ApiType.CoinMarketCap);
+        ApiInterface currenciesApi = ApiClient.getClient(coiMarketApi.getLink()).create(ApiInterface.class);
+        String key = coiMarketApi.getKey();
         Call<CoinListDto> call = currenciesApi.getCoins(key, "1", "300", "EUR");
 
         call.enqueue(new Callback<CoinListDto>() {

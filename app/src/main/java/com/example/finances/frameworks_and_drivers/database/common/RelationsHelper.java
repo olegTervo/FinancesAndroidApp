@@ -1,12 +1,13 @@
 package com.example.finances.frameworks_and_drivers.database.common;
 
-import com.example.finances.frameworks_and_drivers.database.account.AccountHelper;
-import com.example.finances.frameworks_and_drivers.database.api.ApiHelper;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
-import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
-import com.example.finances.frameworks_and_drivers.database.operation.OperationHelper;
-import com.example.finances.frameworks_and_drivers.database.price.PriceHelper;
-import com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper;
+import static com.example.finances.frameworks_and_drivers.database.loan.LoanDatabase.*;
+
+import com.example.finances.frameworks_and_drivers.database.account.AccountDatabase;
+import com.example.finances.frameworks_and_drivers.database.api.ApiDatabase;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDatabase;
+import com.example.finances.frameworks_and_drivers.database.operation.OperationDatabase;
+import com.example.finances.frameworks_and_drivers.database.price.PriceDatabase;
+import com.example.finances.frameworks_and_drivers.database.shop.ShopItemDatabase;
 
 public class RelationsHelper {
     public static final String LOAN_OPERATIONS_TABLE_NAME = "LoanOperations";
@@ -56,10 +57,10 @@ public class RelationsHelper {
                 + LOAN_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT loan_operations_loan_fk FOREIGN KEY (" + LOAN_OPERATIONS_LOAN_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + LoanHelper.LOAN_TABLE_NAME + "(" + LoanHelper.LOAN_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + LOAN_TABLE_NAME + "(" + LOAN_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT loan_operations_operation_fk FOREIGN KEY (" + LOAN_OPERATIONS_OPERATION_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + OperationHelper.OPERATION_TABLE_NAME + "(" + OperationHelper.OPERATION_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + OperationDatabase.OPERATION_TABLE_NAME + "(" + OperationDatabase.OPERATION_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;
@@ -73,10 +74,10 @@ public class RelationsHelper {
                 + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT investment_operations_investment_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_INVESTMENT_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + InvestmentHelper.INVESTMENT_TABLE_NAME + "(" + InvestmentHelper.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + InvestmentDatabase.INVESTMENT_TABLE_NAME + "(" + InvestmentDatabase.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT investment_operations_operation_fk FOREIGN KEY (" + INVESTMENT_OPERATIONS_OPERATION_ID_COLUMN_NAME + ")"
-                + "REFERENCES " + OperationHelper.OPERATION_TABLE_NAME + "(" + OperationHelper.OPERATION_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + OperationDatabase.OPERATION_TABLE_NAME + "(" + OperationDatabase.OPERATION_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;
@@ -90,10 +91,10 @@ public class RelationsHelper {
                 + ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT account_operations_account_fk FOREIGN KEY (" + ACCOUNT_OPERATIONS_ACCOUNT_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + AccountHelper.ACCOUNT_TABLE_NAME + "(" + AccountHelper.ACCOUNT_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + AccountDatabase.ACCOUNT_TABLE_NAME + "(" + AccountDatabase.ACCOUNT_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT account_operations_operations_fk FOREIGN KEY (" + ACCOUNT_OPERATIONS_OPERATION_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + OperationHelper.OPERATION_TABLE_NAME + "(" + OperationHelper.OPERATION_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + OperationDatabase.OPERATION_TABLE_NAME + "(" + OperationDatabase.OPERATION_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;
@@ -107,10 +108,10 @@ public class RelationsHelper {
                 + SHOP_ITEM_PRICE_TYPE_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT shop_item_price_shop_item_fk FOREIGN KEY (" + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + ShopItemHelper.SHOP_ITEM_TABLE_NAME + "(" + ShopItemHelper.SHOP_ITEM_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + ShopItemDatabase.SHOP_ITEM_TABLE_NAME + "(" + ShopItemDatabase.SHOP_ITEM_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT shop_item_price_price_fk FOREIGN KEY (" + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + PriceHelper.PRICE_TABLE_NAME + "(" + PriceHelper.PRICE_TABLE_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + PriceDatabase.PRICE_TABLE_NAME + "(" + PriceDatabase.PRICE_TABLE_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;
@@ -123,10 +124,10 @@ public class RelationsHelper {
                 + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME +" INTEGER NOT NULL, "
 
                 + "CONSTRAINT investment_price_investment_fk FOREIGN KEY (" + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + InvestmentHelper.INVESTMENT_TABLE_NAME + "(" + InvestmentHelper.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + InvestmentDatabase.INVESTMENT_TABLE_NAME + "(" + InvestmentDatabase.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT investment_price_price_fk FOREIGN KEY (" + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + PriceHelper.PRICE_TABLE_NAME + "(" + PriceHelper.PRICE_TABLE_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + PriceDatabase.PRICE_TABLE_NAME + "(" + PriceDatabase.PRICE_TABLE_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;
@@ -140,10 +141,10 @@ public class RelationsHelper {
                 + INVESTMENT_API_NAME_COLUMN_NAME +" VARCHAR(1024) NOT NULL, "
 
                 + "CONSTRAINT investment_api_investment_fk FOREIGN KEY (" + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + InvestmentHelper.INVESTMENT_TABLE_NAME + "(" + InvestmentHelper.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
+                + "REFERENCES " + InvestmentDatabase.INVESTMENT_TABLE_NAME + "(" + InvestmentDatabase.INVESTMENT_TABLE_ID_COLUMN_NAME + "), "
 
                 + "CONSTRAINT investment_api_api_fk FOREIGN KEY (" + INVESTMENT_API_API_ID_COLUMN_NAME + ") "
-                + "REFERENCES " + ApiHelper.API_TABLE_NAME + "(" + ApiHelper.API_TABLE_ID_COLUMN_NAME + ")"
+                + "REFERENCES " + ApiDatabase.API_TABLE_NAME + "(" + ApiDatabase.API_TABLE_ID_COLUMN_NAME + ")"
                 + ");\n";
 
         return initialString;

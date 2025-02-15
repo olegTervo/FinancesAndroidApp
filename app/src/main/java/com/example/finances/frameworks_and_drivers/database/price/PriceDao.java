@@ -1,12 +1,7 @@
 package com.example.finances.frameworks_and_drivers.database.price;
 
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.INVESTMENT_PRICE_TABLE_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.SHOP_ITEM_PRICE_TABLE_NAME;
-import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.SHOP_ITEM_PRICE_TYPE_COLUMN_NAME;
+import static com.example.finances.frameworks_and_drivers.database.common.RelationsHelper.*;
+import static com.example.finances.frameworks_and_drivers.database.price.PriceDatabase.*;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,44 +11,27 @@ import com.example.finances.domain.enums.PriceType;
 import com.example.finances.domain.enums.ShopItemPriceType;
 import com.example.finances.domain.models.Price;
 import com.example.finances.domain.models.ShopItemPrice;
-import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PriceHelper {
+import javax.inject.Inject;
 
-    public static final String PRICE_TABLE_NAME =               "Price";
-    public static final String PRICE_TABLE_ID_COLUMN_NAME =       "Id";
-    public static final String PRICE_TABLE_PRICE_COLUMN_NAME =      "Price";
-    public static final String PRICE_TABLE_CREATED_COLUMN_NAME = "Created";
-    public static final String PRICE_TABLE_MODIFIED_COLUMN_NAME = "Modified";
+public class PriceDao {
+    private final PriceDatabase priceDatabase;
 
-    public static String CreateTableString() {
-        String initialString = "CREATE TABLE "
-                + PRICE_TABLE_NAME
-                + " (" + PRICE_TABLE_ID_COLUMN_NAME + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PRICE_TABLE_PRICE_COLUMN_NAME +" FLOAT NOT NULL, "
-                + PRICE_TABLE_CREATED_COLUMN_NAME +" TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-                + PRICE_TABLE_MODIFIED_COLUMN_NAME +" TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
-
-                + ");\n";
-
-        return initialString;
+    @Inject
+    public PriceDao(PriceDatabase db) {
+        this.priceDatabase = db;
     }
 
-    public static String DropTableString() {
-        String res = "DROP TABLE " + PRICE_TABLE_NAME + ";\n";
-        return res;
-    }
-
-    public static float GetPrice(DatabaseHelper connection, int itemId, PriceType priceType, int additionalType) {
+    public float GetPrice(long itemId, PriceType priceType, int additionalType) {
         switch (priceType) {
             case ShopItem:
-                return GetShopItemPrice(connection, itemId, ShopItemPriceType.fromInt(additionalType));
+                return GetShopItemPrice(itemId, ShopItemPriceType.fromInt(additionalType));
             case Investment:
-                return GetInvestmentPrice(connection, itemId);
+                return GetInvestmentPrice(itemId);
             default:
                 break;
         }
@@ -61,12 +39,12 @@ public class PriceHelper {
         return -1;
     }
 
-    public static List<Price> GetPrices(DatabaseHelper connection, int itemId, PriceType priceType, int additionalType) {
+    public List<Price> GetPrices(long itemId, PriceType priceType, int additionalType) {
         switch (priceType) {
             case ShopItem:
-                return GetShopItemPrices(connection, itemId);
+                return GetShopItemPrices(itemId);
             case Investment:
-                return GetInvestmentPrices(connection, itemId);
+                return GetInvestmentPrices(itemId);
             default:
                 break;
         }
@@ -74,12 +52,12 @@ public class PriceHelper {
         return new ArrayList<>();
     }
 
-    public static boolean CreatePrice(DatabaseHelper connection, long itemId, PriceType priceType, int additionalType, float price) {
+    public boolean CreatePrice(long itemId, PriceType priceType, int additionalType, float price) {
         switch (priceType) {
             case ShopItem:
-                return CreateShopItemPrice(connection, itemId, ShopItemPriceType.fromInt(additionalType), price);
+                return CreateShopItemPrice(itemId, ShopItemPriceType.fromInt(additionalType), price);
             case Investment:
-                return CreateInvestmentPrice(connection, itemId, price);
+                return CreateInvestmentPrice(itemId, price);
             default:
                 break;
         }
@@ -87,12 +65,12 @@ public class PriceHelper {
         return false;
     }
 
-    public static boolean DeletePrices(DatabaseHelper connection, int itemId, PriceType priceType){
+    public boolean DeletePrices(int itemId, PriceType priceType) {
         switch (priceType) {
             case ShopItem:
-                return DeleteShopItemPrices(connection, itemId);
+                return DeleteShopItemPrices(itemId);
             case Investment:
-                return DeleteInvestmentPrices(connection, itemId);
+                return DeleteInvestmentPrices(itemId);
             default:
                 break;
         }
@@ -100,15 +78,15 @@ public class PriceHelper {
         return false;
     }
 
-    private static float GetShopItemPrice(DatabaseHelper connection, int shopItemId, ShopItemPriceType type) {
+    private float GetShopItemPrice(long shopItemId, ShopItemPriceType type) {
         float result = 0;
-        SQLiteDatabase db = connection.getReadableDatabase();
+        SQLiteDatabase db = priceDatabase.getReadableDatabase();
 
         String getScript = String.format("SELECT " + PRICE_TABLE_PRICE_COLUMN_NAME + " FROM " + PRICE_TABLE_NAME + " P " +
                 " INNER JOIN " + SHOP_ITEM_PRICE_TABLE_NAME + " SIP " +
-                    " ON SIP." + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
-                        " AND SIP." + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + " = %s" +
-                        " AND SIP." + SHOP_ITEM_PRICE_TYPE_COLUMN_NAME + " = %s" +
+                " ON SIP." + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
+                " AND SIP." + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + " = %s" +
+                " AND SIP." + SHOP_ITEM_PRICE_TYPE_COLUMN_NAME + " = %s" +
                 " LIMIT 1", shopItemId, ShopItemPriceType.toInt(type));
         Cursor reader = db.rawQuery(getScript, null);
 
@@ -119,14 +97,14 @@ public class PriceHelper {
         return result;
     }
 
-    private static float GetInvestmentPrice(DatabaseHelper connection, int investmentId) {
+    private float GetInvestmentPrice(long investmentId) {
         float result = 0;
-        SQLiteDatabase db = connection.getReadableDatabase();
+        SQLiteDatabase db = priceDatabase.getReadableDatabase();
 
         String getScript = String.format("SELECT " + PRICE_TABLE_PRICE_COLUMN_NAME + " FROM " + PRICE_TABLE_NAME  + " P " +
                 " INNER JOIN " + INVESTMENT_PRICE_TABLE_NAME + " IP " +
-                    " ON IP." + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
-                        " AND IP." + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + " = %s" +
+                " ON IP." + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
+                " AND IP." + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + " = %s" +
                 " ORDER BY P." + PRICE_TABLE_MODIFIED_COLUMN_NAME + " DESC" +
                 " LIMIT 1", investmentId);
         Cursor reader = db.rawQuery(getScript, null);
@@ -138,8 +116,8 @@ public class PriceHelper {
         return result;
     }
 
-    private static boolean CreateShopItemPrice(DatabaseHelper connection, long shopItemId, ShopItemPriceType type, double price) {
-        SQLiteDatabase db = connection.getWritableDatabase();
+    private boolean CreateShopItemPrice(long shopItemId, ShopItemPriceType type, double price) {
+        SQLiteDatabase db = priceDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(PRICE_TABLE_PRICE_COLUMN_NAME, price);
@@ -163,8 +141,8 @@ public class PriceHelper {
         return true;
     }
 
-    private static boolean CreateInvestmentPrice(DatabaseHelper connection, long investmentId, double price) {
-        SQLiteDatabase db = connection.getWritableDatabase();
+    private boolean CreateInvestmentPrice(long investmentId, double price) {
+        SQLiteDatabase db = priceDatabase.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(PRICE_TABLE_PRICE_COLUMN_NAME, price);
@@ -187,11 +165,11 @@ public class PriceHelper {
         return true;
     }
 
-    private static boolean DeleteShopItemPrices(DatabaseHelper connection, int itemId) {
+    private boolean DeleteShopItemPrices(int itemId) {
         long res = -1;
-        int[] pricesToDelete = GetShopItemPrices(connection, itemId).stream().mapToInt(p -> p.GetId()).toArray();
+        int[] pricesToDelete = GetShopItemPrices(itemId).stream().mapToInt(p -> p.GetId()).toArray();
 
-        SQLiteDatabase db = connection.getWritableDatabase();
+        SQLiteDatabase db = priceDatabase.getWritableDatabase();
 
         res = db.delete(
                 SHOP_ITEM_PRICE_TABLE_NAME
@@ -218,11 +196,11 @@ public class PriceHelper {
         return true;
     }
 
-    private static boolean DeleteInvestmentPrices(DatabaseHelper connection, int itemId) {
+    private boolean DeleteInvestmentPrices(int itemId) {
         long res = -1;
-        int[] pricesToDelete = GetShopItemPrices(connection, itemId).stream().mapToInt(p -> p.GetId()).toArray();
+        int[] pricesToDelete = GetShopItemPrices(itemId).stream().mapToInt(p -> p.GetId()).toArray();
 
-        SQLiteDatabase db = connection.getWritableDatabase();
+        SQLiteDatabase db = priceDatabase.getWritableDatabase();
 
         res = db.delete(
                 SHOP_ITEM_PRICE_TABLE_NAME
@@ -249,9 +227,9 @@ public class PriceHelper {
         return true;
     }
 
-    private static List<Price> GetShopItemPrices(DatabaseHelper connection, int shopItemId) {
+    private List<Price> GetShopItemPrices(long shopItemId) {
         ArrayList<Price> result = new ArrayList<>();
-        SQLiteDatabase db = connection.getReadableDatabase();
+        SQLiteDatabase db = priceDatabase.getReadableDatabase();
 
         String getScript = String.format("SELECT " +
                 PRICE_TABLE_ID_COLUMN_NAME + ", " +
@@ -261,8 +239,8 @@ public class PriceHelper {
                 SHOP_ITEM_PRICE_TYPE_COLUMN_NAME +
                 " FROM " + PRICE_TABLE_NAME  + " P " +
                 " INNER JOIN " + SHOP_ITEM_PRICE_TABLE_NAME + " SIP " +
-                    " ON SIP." + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
-                        " AND SIP." + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + " = %s", shopItemId);
+                " ON SIP." + SHOP_ITEM_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
+                " AND SIP." + SHOP_ITEM_PRICE_SHOP_ITEM_ID_COLUMN_NAME + " = %s", shopItemId);
 
         Cursor reader = db.rawQuery(getScript, null);
 
@@ -283,19 +261,19 @@ public class PriceHelper {
         return result;
     }
 
-    private static List<Price> GetInvestmentPrices(DatabaseHelper connection, int investmentId) {
+    private List<Price> GetInvestmentPrices(long investmentId) {
         ArrayList<Price> result = new ArrayList<>();
-        SQLiteDatabase db = connection.getReadableDatabase();
+        SQLiteDatabase db = priceDatabase.getReadableDatabase();
 
         String getScript = String.format("SELECT " +
-                    PRICE_TABLE_ID_COLUMN_NAME + ", " +
-                    PRICE_TABLE_PRICE_COLUMN_NAME + ", " +
-                    PRICE_TABLE_CREATED_COLUMN_NAME + ", " +
-                    PRICE_TABLE_MODIFIED_COLUMN_NAME +
+                PRICE_TABLE_ID_COLUMN_NAME + ", " +
+                PRICE_TABLE_PRICE_COLUMN_NAME + ", " +
+                PRICE_TABLE_CREATED_COLUMN_NAME + ", " +
+                PRICE_TABLE_MODIFIED_COLUMN_NAME +
                 " FROM " + PRICE_TABLE_NAME  + " P " +
                 " INNER JOIN " + INVESTMENT_PRICE_TABLE_NAME + " IP " +
-                    " ON IP." + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
-                        " AND IP." + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + " = %s", investmentId);
+                " ON IP." + INVESTMENT_PRICE_PRICE_ID_COLUMN_NAME + " = P." + PRICE_TABLE_ID_COLUMN_NAME +
+                " AND IP." + INVESTMENT_PRICE_INVESTMENT_ID_COLUMN_NAME + " = %s", investmentId);
 
         Cursor reader = db.rawQuery(getScript, null);
 
@@ -314,5 +292,4 @@ public class PriceHelper {
         reader.close();
         return result;
     }
-
 }

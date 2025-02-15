@@ -1,17 +1,22 @@
 package com.example.finances.presentation.activities;
 
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopHelper.GetShopId;
-import static com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper.CreateItem;
+import static com.example.finances.presentation.activities.FullPriceShopActivity.FullPriceShopName;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.finances.domain.services.ShopService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.R;
 
+import javax.inject.Inject;
+
 public class AddItemActivity extends BaseActivity {
+
+    @Inject
+    ShopService shopService;
 
     private DatabaseHelper db;
 
@@ -42,7 +47,13 @@ public class AddItemActivity extends BaseActivity {
                 TextView sellPrice = findViewById(R.id.SellPrice);
 
                 try {
-                    boolean changed = CreateItem(db, name.getText().toString(), GetShopId(db, "FullPriceShop"), Float.parseFloat(buyPrice.getText().toString()), Float.parseFloat(sellPrice.getText().toString()));
+                    long shopId = shopService.GetShopId(FullPriceShopName);
+                    boolean changed = shopService.CreateShopItem(
+                            name.getText().toString(),
+                            shopId,
+                            Float.parseFloat(buyPrice.getText().toString()),
+                            Float.parseFloat(sellPrice.getText().toString())
+                    );
 
                     if(!changed)
                         Log("Failed to create item, returned false");

@@ -5,17 +5,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.finances.domain.models.Investment;
+import com.example.finances.domain.services.InvestmentsService;
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
-import com.example.finances.frameworks_and_drivers.database.price.PriceHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
 import com.example.finances.R;
-import com.example.finances.domain.enums.PriceType;
 import com.example.finances.domain.enums.ValueDateType;
+
+import javax.inject.Inject;
 
 public class EditInvestmentsActivity extends BaseActivity {
     private DatabaseHelper db;
+
+    @Inject
+    InvestmentsService investmentService;
+    @Inject
+    VariablesService variablesService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +40,13 @@ public class EditInvestmentsActivity extends BaseActivity {
             public void onClick(View view) {
                 boolean completed = false;
                 EditText id = findViewById(R.id.idToDelete);
-                int toDelete = Integer.parseInt(id.getText().toString());
+                long toDelete = Long.parseLong(id.getText().toString());
 
-                InvestmentDao inv = InvestmentHelper.GetInvestment(db, toDelete);
-                float p = PriceHelper.GetPrice(db, toDelete, PriceType.Investment, 0);
-                completed = ValueDateHelper.increaseTopValue(db, -(inv.Amount*p), ValueDateType.Investments);
+                Investment inv = investmentService.getInvestment(toDelete);
+                //float p = PriceHelper.GetPrice(db, toDelete, PriceType.Investment, 0); TODO check
+                completed = variablesService.increaseTopValue(-(inv.getAmount()*inv.getLastPrice().GetPrice()), ValueDateType.Investments);
 
-                completed = completed && InvestmentHelper.DeleteInvestment(db, toDelete);
+                completed = completed && investmentService.deleteInvestment(toDelete);
 
                 if (completed) {
                     ShowConfirmation(view, "Investment deleted!", 3000);
@@ -62,11 +67,11 @@ public class EditInvestmentsActivity extends BaseActivity {
                     boolean updated = false;
                     int toEdit = Integer.parseInt(id.getText().toString());
                     float amount = Float.parseFloat(val.getText().toString());
-                    InvestmentDao inv = InvestmentHelper.GetInvestment(db, toEdit);
+                    Investment inv = investmentService.getInvestment(toEdit);
 
                     if (inv != null) {
-                        inv.Amount = amount;
-                        updated = InvestmentHelper.UpdateInvestment(db, inv);
+                        inv.setAmount(amount);
+                        updated = investmentService.updateInvestment(inv) != null;
                     }
 
                     if(updated) {

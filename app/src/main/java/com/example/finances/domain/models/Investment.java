@@ -1,6 +1,7 @@
 package com.example.finances.domain.models;
 
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
+import android.os.LocaleList;
+
 import com.example.finances.domain.enums.InvestmentType;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Investment {
-    private int id;
+    private long id;
     private String name;
     private float amount;
     private LocalDate openDate;
@@ -17,7 +18,7 @@ public class Investment {
 
     private List<Price> priceHistory;
 
-    public Investment(int id, String name, float amount, LocalDate openDate, LocalDate modified, InvestmentType type) {
+    public Investment(long id, String name, float amount, LocalDate openDate, LocalDate modified, InvestmentType type) {
         this.id = id;
         this.name = name;
         this.amount = amount;
@@ -39,27 +40,32 @@ public class Investment {
         this.priceHistory = new ArrayList<>();
     }
 
-    public Investment(InvestmentDao dto, InvestmentType type, List<Price> hist) {
-        this.id = dto.Id;
-        this.name = dto.Name;
-        this.amount = dto.Amount;
-        this.openDate = dto.OpenDate;
-        this.modified = dto.Modified;
-        this.type = type;
-
-        this.priceHistory = hist;
-    }
-
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 
-    public List<Price> getHistory() {
-        return this.priceHistory;
+    public String getName() {
+        return this.name;
     }
 
     public float getAmount() {
         return this.amount;
+    }
+
+    public LocalDate getOpenDate() {
+        return this.openDate;
+    }
+
+    public LocalDate getModified() {
+        return this.modified;
+    }
+
+    public InvestmentType getType() {
+        return this.type;
+    }
+
+    public List<Price> getHistory() {
+        return this.priceHistory;
     }
 
     public Price getLastPrice() {
@@ -68,6 +74,10 @@ public class Investment {
 
         this.priceHistory.sort((a, b) -> a.GetModified().compareTo(b.GetModified()));
         return this.priceHistory.get(this.priceHistory.size()-1);
+    }
+
+    public void setAmount(float amount) {
+        this.amount = amount;
     }
 
     public void setHistory(List<Price> history) {

@@ -8,12 +8,10 @@ import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.finances.domain.interfaces.IAccountRepository;
+import com.example.finances.domain.models.Loan;
 import com.example.finances.domain.services.BankService;
+import com.example.finances.domain.services.VariablesService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
-import com.example.finances.frameworks_and_drivers.database.loan.LoanDao;
 import com.example.finances.R;
 import com.example.finances.domain.enums.ValueDateType;
 import com.example.finances.presentation.views.MyEasyTable;
@@ -30,9 +28,11 @@ public class BankActivity extends BaseActivity {
 
     @Inject
     BankService bankService;
+    @Inject
+    VariablesService variablesService;
 
     private int bankMoney;
-    private ArrayList<LoanDao> loans;
+    private ArrayList<Loan> loans;
 
     private MyEasyTable dataTable;
 
@@ -56,7 +56,7 @@ public class BankActivity extends BaseActivity {
 
     private void getData() {
         this.bankMoney = bankService.GetBankMoney();
-        this.loans = LoanHelper.GetUnpaidLoans(db);
+        this.loans = bankService.GetUnpaidLoans();
     }
 
     private void setData() {
@@ -93,23 +93,23 @@ public class BankActivity extends BaseActivity {
 
                     while (value > 0 && added) {
                         if(BankActivity.this.loans.size()>0){
-                            LoanDao loan = BankActivity.this.loans.get(BankActivity.this.loans.size()-1);
+                            Loan loan = BankActivity.this.loans.get(BankActivity.this.loans.size()-1);
 
-                            if(loan.unpaid < value){
-                                added = LoanHelper.PayLoan(db, loan.id, loan.unpaid);
+                            if(loan.getUnpaid() < value){
+                                added = bankService.PayLoan(loan.id, loan.getUnpaid());
                                 BankActivity.this.loans.remove(BankActivity.this.loans.size()-1);
-                                value -= loan.unpaid;
-                                ValueDateHelper.increaseTopValue(db, loan.unpaid*(-1), ValueDateType.DailyGrowth);
+                                value -= loan.getUnpaid();
+                                variablesService.increaseTopValue( loan.getUnpaid()*(-1), ValueDateType.DailyGrowth);
                             }
                             else {
-                                added = LoanHelper.PayLoan(db, loan.id, value);
-                                ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
+                                added = bankService.PayLoan(loan.id, value);
+                                variablesService.increaseTopValue(value*(-1), ValueDateType.DailyGrowth);
                                 value = 0;
                             }
                         }
                         else {
                             added = bankService.AddMoneyToBank(value) != -1;
-                            ValueDateHelper.increaseTopValue(db, value*(-1), ValueDateType.DailyGrowth);
+                            variablesService.increaseTopValue(value*(-1), ValueDateType.DailyGrowth);
                             value = 0;
                         }
                     }
@@ -137,13 +137,13 @@ public class BankActivity extends BaseActivity {
 
                 try {
                     int value = Integer.parseInt(text);
-                    boolean added = LoanHelper.TakeLoan(db, value);
+                    boolean added = bankService.TakeLoan(value);
 
                     if(!added)
                         Toast.makeText(BankActivity.this, "Failed to insert into database, returned false", Toast.LENGTH_LONG).show();
                     else{
                         Toast.makeText(BankActivity.this, "Saved successfully!", Toast.LENGTH_LONG).show();
-                        ValueDateHelper.increaseTopValue(db, value, ValueDateType.DailyGrowth);
+                        variablesService.increaseTopValue(value, ValueDateType.DailyGrowth);
                     }
 
                     refresh();

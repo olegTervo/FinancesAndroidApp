@@ -4,44 +4,61 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.Nullable;
+import com.example.finances.domain.services.ShopService;
+import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
+import com.example.finances.frameworks_and_drivers.database.account.AccountDatabase;
+import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
+import com.example.finances.frameworks_and_drivers.database.api.ApiDatabase;
+import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDatabase;
+import com.example.finances.frameworks_and_drivers.database.loan.LoanDatabase;
+import com.example.finances.frameworks_and_drivers.database.operation.OperationDatabase;
+import com.example.finances.frameworks_and_drivers.database.price.PriceDatabase;
+import com.example.finances.frameworks_and_drivers.database.shop.ShopDatabase;
+import com.example.finances.frameworks_and_drivers.database.shop.ShopItemDatabase;
+import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateDatabase;
+import com.example.finances.frameworks_and_drivers.database.variables.VariableDatabase;
 
-import com.example.finances.frameworks_and_drivers.database.account.AccountHelper;
-import com.example.finances.frameworks_and_drivers.database.api.ApiHelper;
-import com.example.finances.frameworks_and_drivers.database.daily_growth.DailyGrowthHelper;
-import com.example.finances.frameworks_and_drivers.database.investment.InvestmentHelper;
-import com.example.finances.frameworks_and_drivers.database.loan.LoanHelper;
-import com.example.finances.frameworks_and_drivers.database.operation.OperationHelper;
-import com.example.finances.frameworks_and_drivers.database.price.PriceHelper;
-import com.example.finances.frameworks_and_drivers.database.shop.ShopHelper;
-import com.example.finances.frameworks_and_drivers.database.shop.ShopItemHelper;
-import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateHelper;
-import com.example.finances.frameworks_and_drivers.database.variables.VariablesHelper;
+import javax.inject.Inject;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+
+    @Inject
+    ApiDao apiDao;
+    @Inject
+    AccountDao accountDao;
+    @Inject
+    ShopService shopService;
 
     private boolean updating = false;
     private SQLiteDatabase updatingDB = null;
 
-    public DatabaseHelper(@Nullable Context context) {
+    private static volatile DatabaseHelper INSTANCE;
+
+    public DatabaseHelper(Context context) {
         super(context, "finances.db", null, 17);
+    }
+
+    public static synchronized DatabaseHelper getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new DatabaseHelper(context.getApplicationContext());
+        }
+        return INSTANCE;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         this.updating = true;
         this.updatingDB = db;
-        db.execSQL(DailyGrowthHelper.CreateTableString());
-        db.execSQL(VariablesHelper.CreateTableString());
+        db.execSQL(VariableDatabase.CreateTableString());
 
-        db.execSQL(LoanHelper.CreateTableString());
-        db.execSQL(InvestmentHelper.CreateTableString());
-        db.execSQL(OperationHelper.CreateTableString());
-        db.execSQL(AccountHelper.CreateTableString());
+        db.execSQL(LoanDatabase.CreateTableString());
+        db.execSQL(InvestmentDatabase.CreateTableString());
+        db.execSQL(OperationDatabase.CreateTableString());
+        db.execSQL(AccountDatabase.CreateTableString());
 
         db.execSQL(RelationsHelper.CreateTableString());
 
-        AccountHelper.Initialize(this);
+        accountDao.Initialize();
         this.updating = false;
         this.updatingDB = null;
     }
@@ -51,10 +68,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (newVersion == 2) {
             this.updating = true;
             this.updatingDB = db;
-            db.execSQL(LoanHelper.CreateTableString());
-            db.execSQL(InvestmentHelper.CreateTableString());
-            db.execSQL(OperationHelper.CreateTableString());
-            db.execSQL(AccountHelper.CreateTableString());
+            db.execSQL(LoanDatabase.CreateTableString());
+            db.execSQL(InvestmentDatabase.CreateTableString());
+            db.execSQL(OperationDatabase.CreateTableString());
+            db.execSQL(AccountDatabase.CreateTableString());
 
             db.execSQL(RelationsHelper.CreateTableString());
             this.updating = false;
@@ -73,8 +90,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else if (newVersion == 4 && oldVersion != 4) {
             this.updating = true;
             this.updatingDB = db;
-            db.execSQL(OperationHelper.DropTableString());
-            db.execSQL(OperationHelper.CreateTableString());
+            db.execSQL(OperationDatabase.DropTableString());
+            db.execSQL(OperationDatabase.CreateTableString());
             this.updating = false;
             this.updatingDB = null;
         }
@@ -86,14 +103,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(RelationsHelper.DropInvestmentOperationsTableString());
             db.execSQL(RelationsHelper.DropAccountOperationsTableString());
 
-            db.execSQL(AccountHelper.DropTableString());
-            db.execSQL(AccountHelper.CreateTableString());
-            db.execSQL(InvestmentHelper.DropTableString());
-            db.execSQL(InvestmentHelper.CreateTableString());
-            db.execSQL(LoanHelper.DropTableString());
-            db.execSQL(LoanHelper.CreateTableString());
-            db.execSQL(OperationHelper.DropTableString());
-            db.execSQL(OperationHelper.CreateTableString());
+            db.execSQL(AccountDatabase.DropTableString());
+            db.execSQL(AccountDatabase.CreateTableString());
+            db.execSQL(InvestmentDatabase.DropTableString());
+            db.execSQL(InvestmentDatabase.CreateTableString());
+            db.execSQL(LoanDatabase.DropTableString());
+            db.execSQL(LoanDatabase.CreateTableString());
+            db.execSQL(OperationDatabase.DropTableString());
+            db.execSQL(OperationDatabase.CreateTableString());
 
             db.execSQL(RelationsHelper.CreateAccountOperationsTableString());
             db.execSQL(RelationsHelper.CreateLoanOperationsTableString());
@@ -105,11 +122,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else if ( newVersion == 8 && oldVersion != 8){
             this.updating = true;
             this.updatingDB = db;
-            db.execSQL(ShopHelper.CreateTableString());
-            db.execSQL(ShopItemHelper.CreateTableString());
-            db.execSQL(PriceHelper.CreateTableString());
-
-            ShopHelper.Initialize(this);
+            db.execSQL(ShopDatabase.CreateTableString());
+            db.execSQL(ShopItemDatabase.CreateTableString());
+            db.execSQL(PriceDatabase.CreateTableString());
+            shopService.Initialize();
             this.updating = false;
             this.updatingDB = null;
         }
@@ -117,8 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else if ( newVersion == 9 && oldVersion != 9){
             this.updating = true;
             this.updatingDB = db;
-            db.execSQL(PriceHelper.DropTableString());
-            db.execSQL(PriceHelper.CreateTableString());
+            db.execSQL(PriceDatabase.DropTableString());
+            db.execSQL(PriceDatabase.CreateTableString());
             this.updating = false;
             this.updatingDB = null;
         }
@@ -126,14 +142,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else if ( newVersion == 10 && oldVersion != 10){
             this.updating = true;
             this.updatingDB = db;
-            db.execSQL(InvestmentHelper.DropTableString());
-            db.execSQL(InvestmentHelper.CreateTableString());
+            db.execSQL(InvestmentDatabase.DropTableString());
+            db.execSQL(InvestmentDatabase.CreateTableString());
 
-            db.execSQL(ShopItemHelper.DropTableString());
-            db.execSQL(ShopItemHelper.CreateTableString());
+            db.execSQL(ShopItemDatabase.DropTableString());
+            db.execSQL(ShopItemDatabase.CreateTableString());
 
-            db.execSQL(PriceHelper.DropTableString());
-            db.execSQL(PriceHelper.CreateTableString());
+            db.execSQL(PriceDatabase.DropTableString());
+            db.execSQL(PriceDatabase.CreateTableString());
 
             db.execSQL(RelationsHelper.CreateShopItemPriceTableString());
             db.execSQL(RelationsHelper.CreateInvestmentPriceTableString());
@@ -146,10 +162,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             this.updating = true;
             this.updatingDB = db;
 
-            db.execSQL(ApiHelper.CreateTableString());
+            db.execSQL(ApiDatabase.CreateTableString());
             db.execSQL(RelationsHelper.CreateInvestmentApiTableString());
 
-            ApiHelper.InsertCoinMarketCapApi(this);
+            apiDao.InsertCoinMarketCapApi();
 
             this.updating = false;
             this.updatingDB = null;
@@ -164,10 +180,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(RelationsHelper.DropInvestmentOperationsTableString());
             db.execSQL(RelationsHelper.DropShopItemPriceTableString());
 
-            db.execSQL(InvestmentHelper.DropTableString());
-            db.execSQL(PriceHelper.DropTableString());
-            db.execSQL(InvestmentHelper.CreateTableString());
-            db.execSQL(PriceHelper.CreateTableString());
+            db.execSQL(InvestmentDatabase.DropTableString());
+            db.execSQL(PriceDatabase.DropTableString());
+            db.execSQL(InvestmentDatabase.CreateTableString());
+            db.execSQL(PriceDatabase.CreateTableString());
 
             db.execSQL(RelationsHelper.CreateInvestmentApiTableString());
             db.execSQL(RelationsHelper.CreateInvestmentPriceTableString());
@@ -182,9 +198,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             this.updating = true;
             this.updatingDB = db;
 
-            db.execSQL(ValueDateHelper.DropTableString());
-            db.execSQL(ValueDateHelper.CreateTableString());
-            ValueDateHelper.MigrateDailyGrowthTable(db);
+            db.execSQL(ValueDateDatabase.DropTableString());
+            db.execSQL(ValueDateDatabase.CreateTableString());
 
             this.updating = false;
             this.updatingDB = null;

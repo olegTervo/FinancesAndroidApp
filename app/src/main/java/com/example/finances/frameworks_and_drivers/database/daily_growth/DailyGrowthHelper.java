@@ -1,11 +1,10 @@
-package com.example.finances.frameworks_and_drivers.database.daily_growth;
+/*package com.example.finances.frameworks_and_drivers.database.daily_growth;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
-import com.example.finances.frameworks_and_drivers.database.variables.VariablesHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -196,4 +195,6 @@ public class DailyGrowthHelper{
         }
         return true;
     }
-}
+}*/
+
+// No code - no problems :)
