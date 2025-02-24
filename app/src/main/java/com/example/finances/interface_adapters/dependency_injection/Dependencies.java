@@ -1,5 +1,6 @@
 package com.example.finances.interface_adapters.dependency_injection;
 
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
 import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
 import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
@@ -10,6 +11,7 @@ import com.example.finances.frameworks_and_drivers.database.shop.ShopDao;
 import com.example.finances.frameworks_and_drivers.database.shop.ShopItemDao;
 import com.example.finances.frameworks_and_drivers.database.value_date.ValueDateDao;
 import com.example.finances.frameworks_and_drivers.database.variables.VariableDao;
+import com.example.finances.interface_adapters.api.CoinMarketCapApi;
 import com.example.finances.interface_adapters.repository.AccountRepository;
 import com.example.finances.interface_adapters.repository.ApiRepository;
 import com.example.finances.interface_adapters.repository.InvestmentRepository;
@@ -90,5 +92,11 @@ public class Dependencies {
     @Singleton
     public static VariableRepository provideVariableRepository(VariableDao dao) {
         return new VariableRepository(dao);
+    }
+
+    @Provides
+    @Singleton
+    public static CoinMarketCapApi provideCoinMarketCupApi(CoinMarketCapApiGateway api, PriceDao priceDao) {
+        return new CoinMarketCapApi(api, priceDao);
     }
 }

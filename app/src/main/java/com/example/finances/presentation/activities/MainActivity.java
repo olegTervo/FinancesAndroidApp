@@ -1,6 +1,5 @@
 package com.example.finances.presentation.activities;
 
-import static com.example.finances.presentation.activities.FullPriceShopActivity.FullPriceShopName;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import android.content.Context;
@@ -15,35 +14,21 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.finances.domain.interfaces.IApiRepository;
-import com.example.finances.domain.models.Api;
 import com.example.finances.domain.models.DailyGrowth;
 import com.example.finances.domain.services.BankService;
 import com.example.finances.domain.services.VariablesService;
-import com.example.finances.interface_adapters.api.ApiClient;
-import com.example.finances.interface_adapters.api.ApiInterface;
-import com.example.finances.interface_adapters.api.models.CoinListDto;
-import com.example.finances.interface_adapters.api.models.CoinMarketCap.Datum;
-import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.R;
-import com.example.finances.domain.enums.ApiType;
-import com.example.finances.domain.enums.CryptocurrencyType;
 import com.example.finances.domain.enums.ValueDateType;
 import com.example.finances.domain.enums.VariableType;
 import com.example.finances.domain.models.HistoryPrice;
 import com.example.finances.domain.models.ValueDate;
 import com.example.finances.presentation.views.LinearGraph;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends BaseActivity {
     @Inject
@@ -53,76 +38,21 @@ public class MainActivity extends BaseActivity {
     @Inject
     VariablesService variablesService;
 
-    private DatabaseHelper db;
-    private ApiInterface currenciesApi;
-    private Api currenciesApiParameters;
-
     private int DailyGrowth;
     private int Target;
     private float Balance;
-    private int Actives;
-    private double TonPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        db = new DatabaseHelper(this);
-        TonPrice = 0;
-        currenciesApiParameters = apiRepository.GetApi(ApiType.CoinMarketCap);
-        currenciesApi = ApiClient.getClient(currenciesApiParameters.getLink()).create(ApiInterface.class);
-        //currenciesApi = ApiClient.getClient("https://sandbox-api.coinmarketcap.com").create(ApiInterface.class);
-
         MakeButtonHandlers();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getCoins();
-    }
-
-    private void getCoins() {
-        if(this.TonPrice != 0) {
-            refresh();
-            return;
-        }
-
-        String key = this.currenciesApiParameters.getKey();
-        Call<CoinListDto> call = currenciesApi.getCoins(key, "1", "100", "EUR");
-        call.enqueue(new Callback<CoinListDto>() {
-            @Override
-            public void onResponse(Call<CoinListDto> call, Response<CoinListDto> response) {
-                try {
-                    CoinListDto resp = response.body();
-                    Datum toncoin = resp.getData().stream()
-                            .filter(c -> c.getName().equals(CryptocurrencyType.Ton.toString()))
-                            .collect(Collectors.toList())
-                            .get(0);
-                    MainActivity.this.TonPrice = toncoin.getQuote().getEUR().getPrice();
-
-                    TextView output = findViewById(R.id.Output);
-                    output.setText(
-                            new DecimalFormat("#0.000€")
-                                    .format(MainActivity.this.TonPrice)
-                    );
-                }
-                catch (Exception e) {
-                    Log(e.getLocalizedMessage());
-                }
-                finally {
-                    refresh();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CoinListDto> call, Throwable t) {
-                Log(t.getLocalizedMessage());
-                call.cancel();
-                refresh();
-            }
-        });
+        refresh();
     }
 
     @Override
@@ -203,7 +133,6 @@ public class MainActivity extends BaseActivity {
     private void getData() {
         this.DailyGrowth = variablesService.getVariable(VariableType.toInt(VariableType.DailyGrowth));
         this.Target = variablesService.getVariable(VariableType.toInt(VariableType.Target));
-        this.Actives = (int) Math.round(variablesService.getVariable(VariableType.toInt(VariableType.Actives)) * this.TonPrice);
     }
 
     private void setData() {

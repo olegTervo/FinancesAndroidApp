@@ -1,11 +1,11 @@
-package com.example.finances.interface_adapters.api;
+package com.example.finances.frameworks_and_drivers.api_gateway;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Query;
 
-import com.example.finances.interface_adapters.api.models.CoinListDto;
+import com.example.finances.domain.models.api.CoinListDto;
 
 public interface ApiInterface {
 

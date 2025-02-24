@@ -10,11 +10,13 @@ import com.example.finances.domain.interfaces.IShopItemRepository;
 import com.example.finances.domain.interfaces.IShopRepository;
 import com.example.finances.domain.interfaces.IValueDateRepository;
 import com.example.finances.domain.interfaces.IVariableRepository;
+import com.example.finances.domain.interfaces.api.ICoinMarkerCapApi;
 import com.example.finances.domain.services.BankService;
 import com.example.finances.domain.services.InvestmentsService;
 import com.example.finances.domain.services.ShopService;
 import com.example.finances.domain.services.VariablesService;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+import com.example.finances.interface_adapters.api.CoinMarketCapApi;
 import com.example.finances.interface_adapters.repository.AccountRepository;
 import com.example.finances.interface_adapters.repository.ApiRepository;
 import com.example.finances.interface_adapters.repository.InvestmentRepository;
@@ -99,6 +101,12 @@ public class Dependencies {
 
     @Provides
     @Singleton
+    public static ICoinMarkerCapApi provideCoinMarketCupApiInterface(CoinMarketCapApi api) {
+        return api;
+    }
+
+    @Provides
+    @Singleton
     public static BankService provideBankService(
             IAccountRepository accountRepository,
             ILoanRepository loanRepository,
@@ -111,13 +119,14 @@ public class Dependencies {
     @Provides
     @Singleton
     public static InvestmentsService provideInvestmentService(
+            ICoinMarkerCapApi coinMarkerCapApi,
             IInvestmentRepository investmentRepository,
             IApiRepository apiRepository,
             IPriceRepository priceRepository,
             IValueDateRepository valueDateRepository,
             DatabaseHelper helper)
     {
-        return new InvestmentsService(investmentRepository, apiRepository, priceRepository, valueDateRepository, helper);
+        return new InvestmentsService(coinMarkerCapApi, investmentRepository, apiRepository, priceRepository, valueDateRepository, helper);
     }
 
     @Provides

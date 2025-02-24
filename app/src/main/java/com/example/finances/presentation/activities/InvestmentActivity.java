@@ -8,9 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.finances.domain.services.VariablesService;
-import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.R;
-import com.example.finances.interface_adapters.common.interfaces.IApiCallback;
+import com.example.finances.domain.interfaces.api.IApiCallback;
 import com.example.finances.domain.enums.ValueDateType;
 import com.example.finances.domain.models.HistoryPrice;
 import com.example.finances.domain.models.ValueDate;

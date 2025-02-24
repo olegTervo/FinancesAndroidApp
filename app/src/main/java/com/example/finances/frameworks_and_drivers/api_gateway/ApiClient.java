@@ -1,4 +1,4 @@
-package com.example.finances.interface_adapters.api;
+package com.example.finances.frameworks_and_drivers.api_gateway;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

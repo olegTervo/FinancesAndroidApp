@@ -2,8 +2,11 @@ package com.example.finances.frameworks_and_drivers.dependency_injection;
 
 import android.content.Context;
 
-import com.example.finances.domain.models.Operation;
-import com.example.finances.domain.services.ShopService;
+import com.example.finances.domain.enums.ApiType;
+import com.example.finances.domain.models.Api;
+import com.example.finances.frameworks_and_drivers.api_gateway.ApiClient;
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
+import com.example.finances.frameworks_and_drivers.api_gateway.ApiInterface;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDatabase;
 import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
@@ -163,4 +166,25 @@ public class Dependencies {
     public static VariableDao provideVariableDao(VariableDatabase variableDatabase) {
         return new VariableDao(variableDatabase);
     }
+
+    @Provides
+    @Singleton
+    public static Api provideCoinMarketCapApiInstance(ApiDao dao) {
+        return dao.GetApi(ApiType.CoinMarketCap);
+    }
+
+    @Provides
+    @Singleton
+    public static ApiInterface provideApiInterface(Api coinMarketCap) {
+        return ApiClient
+                .getClient(coinMarketCap.getLink())
+                .create(ApiInterface.class);
+    }
+
+    @Provides
+    @Singleton
+    public static CoinMarketCapApiGateway provideCoinMarketCapApiGateway(Api api, ApiInterface apiInterface) {
+        return new CoinMarketCapApiGateway(api, apiInterface);
+    }
+
 }

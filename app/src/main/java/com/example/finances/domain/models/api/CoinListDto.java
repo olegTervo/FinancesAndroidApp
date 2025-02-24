@@ -1,10 +1,10 @@
-package com.example.finances.interface_adapters.api.models;
+package com.example.finances.domain.models.api;
 
 import java.io.Serializable;
 import java.util.List;
 
-import com.example.finances.interface_adapters.api.models.CoinMarketCap.Datum;
-import com.example.finances.interface_adapters.api.models.CoinMarketCap.Status;
+import com.example.finances.domain.models.api.CoinMarketCap.Datum;
+import com.example.finances.domain.models.api.CoinMarketCap.Status;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

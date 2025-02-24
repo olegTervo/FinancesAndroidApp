@@ -1,6 +1,6 @@
-package com.example.finances.interface_adapters.common.models;
+package com.example.finances.domain.models.api;
 
-import com.example.finances.interface_adapters.common.interfaces.IApiCallback;
+import com.example.finances.domain.interfaces.api.IApiCallback;
 
 public class ApiCallback implements IApiCallback {
 

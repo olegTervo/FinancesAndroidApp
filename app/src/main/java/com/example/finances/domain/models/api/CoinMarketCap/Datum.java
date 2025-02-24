@@ -1,4 +1,4 @@
-package com.example.finances.interface_adapters.api.models.CoinMarketCap;
+package com.example.finances.domain.models.api.CoinMarketCap;
 
 import java.io.Serializable;
 

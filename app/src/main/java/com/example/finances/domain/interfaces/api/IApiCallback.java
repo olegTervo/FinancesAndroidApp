@@ -1,4 +1,4 @@
-package com.example.finances.interface_adapters.common.interfaces;
+package com.example.finances.domain.interfaces.api;
 
 public interface IApiCallback {
     void onSuccess();
