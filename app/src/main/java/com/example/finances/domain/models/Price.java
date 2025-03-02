@@ -5,13 +5,13 @@ import com.example.finances.domain.enums.PriceType;
 import java.time.LocalDate;
 
 public class Price {
-    private int id;
+    private long id;
     private float price;
     private LocalDate created;
     private LocalDate modified;
     private PriceType priceType;
 
-    public Price(int id, float price, LocalDate created, LocalDate modified, PriceType type) {
+    public Price(long id, float price, LocalDate created, LocalDate modified, PriceType type) {
         this.id = id;
         this.price = price;
         this.created = created;
@@ -19,7 +19,7 @@ public class Price {
         this.priceType = type;
     }
 
-    public int GetId(){
+    public long GetId(){
         return this.id;
     }
 

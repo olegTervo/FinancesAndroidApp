@@ -14,6 +14,7 @@ import com.example.finances.domain.models.Investment;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -43,13 +44,13 @@ public class InvestmentDao{
         SQLiteDatabase db = investmentDatabase.getReadableDatabase();
 
         String getScript = String.format("SELECT "
-                + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
-                + INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
-                + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
-                + INVESTMENT_TABLE_MODIFIED_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
+                + "I." +  INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
+                + "I." +  INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
+                + "I." +  INVESTMENT_TABLE_MODIFIED_COLUMN_NAME + ", "
                 + " IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + ", "
                 + " IA." + INVESTMENT_API_NAME_COLUMN_NAME
-                + " FROM " + INVESTMENT_TABLE_NAME
+                + " FROM " + INVESTMENT_TABLE_NAME + " I"
                 + " LEFT JOIN " + INVESTMENT_API_TABLE_NAME + " IA "
                 + " ON IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " = I." + INVESTMENT_TABLE_ID_COLUMN_NAME
                 + " WHERE " + INVESTMENT_TABLE_ID_COLUMN_NAME + " = %d", id);
@@ -74,7 +75,7 @@ public class InvestmentDao{
         return result;
     }
 
-    public ArrayList<Investment> GetInvestments(){
+    public List<Investment> GetInvestments(){
         ArrayList<Investment> result = new ArrayList<>();
         SQLiteDatabase db = investmentDatabase.getReadableDatabase();
 
@@ -125,57 +126,15 @@ public class InvestmentDao{
         return result;
     }
 
-    public ArrayList<Investment> SearchInvestments(InvestmentType type){
-        ArrayList<Investment> result = new ArrayList<>();
-        SQLiteDatabase db = investmentDatabase.getReadableDatabase();
-        String getScript = "";
-
-        if (type.equals(InvestmentType.Manual)) {
-            getScript = "SELECT " + "I." + INVESTMENT_TABLE_ID_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_MODIFIED_COLUMN_NAME
-                    + " FROM " + INVESTMENT_TABLE_NAME + " I " +
-                    " LEFT JOIN " + INVESTMENT_API_TABLE_NAME + " IA " +
-                    " ON IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " = I." + INVESTMENT_TABLE_ID_COLUMN_NAME +
-                    " WHERE IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " IS NULL" +
-                    " ORDER BY I." + INVESTMENT_TABLE_ID_COLUMN_NAME + " DESC";
+    public List<Investment> SearchInvestments(InvestmentType type){
+        switch (type) {
+            case Manual:
+                return getManualInvestments();
+            case ApiLinked:
+                return getApiInvestments();
+            default:
+                return new ArrayList<>();
         }
-        else if (type.equals(InvestmentType.ApiLinked)) {
-            getScript = "SELECT " + "I." + INVESTMENT_TABLE_ID_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
-                    + "I." + INVESTMENT_TABLE_MODIFIED_COLUMN_NAME + ", "
-
-                    + "IA." + INVESTMENT_API_API_ID_COLUMN_NAME + ", "
-                    + "IA." + INVESTMENT_API_NAME_COLUMN_NAME
-                    + " FROM " + INVESTMENT_TABLE_NAME + " I " +
-                    " INNER JOIN " + INVESTMENT_API_TABLE_NAME + " IA " +
-                    " ON IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " = I." + INVESTMENT_TABLE_ID_COLUMN_NAME +
-                    " ORDER BY I." + INVESTMENT_TABLE_ID_COLUMN_NAME + " DESC";
-        }
-
-        Cursor reader = db.rawQuery(getScript, null);
-
-        if (reader.moveToFirst())
-            do {
-                int id = reader.getInt(0);
-                String name = reader.getString(1);
-                float amount = reader.getFloat(2);
-                LocalDate openDate = LocalDate.parse(reader.getString(3).substring(0, 10));
-                LocalDate modified = LocalDate.parse(reader.getString(4).substring(0, 10));
-
-                int apiId = reader.getInt(5);
-                String apiName = reader.getString(6);
-
-                Investment toAdd = new Investment(id, name, amount, openDate, modified, type);
-                result.add(toAdd);
-            } while (reader.moveToNext());
-
-        reader.close();
-        return result;
     }
 
     public boolean UpdateInvestment(Investment investment){
@@ -196,17 +155,83 @@ public class InvestmentDao{
 
     public boolean DeleteInvestment(long id){
         long res = -1;
-        /*
-        if(DeletePrices(id, PriceType.Investment)) {
-            SQLiteDatabase db = investmentDatabase.getWritableDatabase();
-            res = db.delete(INVESTMENT_TABLE_NAME, INVESTMENT_TABLE_ID_COLUMN_NAME + "=?", new String[] { Integer.toString(id) });
-        }
+
+        SQLiteDatabase db = investmentDatabase.getWritableDatabase();
+        res = db.delete(INVESTMENT_TABLE_NAME, INVESTMENT_TABLE_ID_COLUMN_NAME + "=?", new String[] { Long.toString(id) });
 
         if (res == -1) {
             return false;
         }
-        TODO
-         */
+
         return true;
+    }
+
+    private List<Investment> getManualInvestments() {
+        ArrayList<Investment> result = new ArrayList<>();
+        SQLiteDatabase db = investmentDatabase.getReadableDatabase();
+        String getScript = "SELECT " + "I." + INVESTMENT_TABLE_ID_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_MODIFIED_COLUMN_NAME
+                + " FROM " + INVESTMENT_TABLE_NAME + " I " +
+                " LEFT JOIN " + INVESTMENT_API_TABLE_NAME + " IA " +
+                " ON IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " = I." + INVESTMENT_TABLE_ID_COLUMN_NAME +
+                " WHERE IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " IS NULL" +
+                " ORDER BY I." + INVESTMENT_TABLE_ID_COLUMN_NAME + " DESC";
+
+        Cursor reader = db.rawQuery(getScript, null);
+
+        if (reader.moveToFirst())
+            do {
+                int id = reader.getInt(0);
+                String name = reader.getString(1);
+                float amount = reader.getFloat(2);
+                LocalDate openDate = LocalDate.parse(reader.getString(3).substring(0, 10));
+                LocalDate modified = LocalDate.parse(reader.getString(4).substring(0, 10));
+
+                Investment toAdd = new Investment(id, name, amount, openDate, modified, InvestmentType.Manual);
+                result.add(toAdd);
+            } while (reader.moveToNext());
+
+        reader.close();
+        return result;
+    }
+
+    private List<Investment> getApiInvestments() {
+        ArrayList<Investment> result = new ArrayList<>();
+        SQLiteDatabase db = investmentDatabase.getReadableDatabase();
+        String getScript = "SELECT " + "I." + INVESTMENT_TABLE_ID_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_NAME_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_AMOUNT_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_OPENDATE_COLUMN_NAME + ", "
+                + "I." + INVESTMENT_TABLE_MODIFIED_COLUMN_NAME + ", "
+
+                + "IA." + INVESTMENT_API_API_ID_COLUMN_NAME + ", "
+                + "IA." + INVESTMENT_API_NAME_COLUMN_NAME
+                + " FROM " + INVESTMENT_TABLE_NAME + " I " +
+                " INNER JOIN " + INVESTMENT_API_TABLE_NAME + " IA " +
+                " ON IA." + INVESTMENT_API_INVESTMENT_ID_COLUMN_NAME + " = I." + INVESTMENT_TABLE_ID_COLUMN_NAME +
+                " ORDER BY I." + INVESTMENT_TABLE_ID_COLUMN_NAME + " DESC";
+
+        Cursor reader = db.rawQuery(getScript, null);
+
+        if (reader.moveToFirst())
+            do {
+                int id = reader.getInt(0);
+                String name = reader.getString(1);
+                float amount = reader.getFloat(2);
+                LocalDate openDate = LocalDate.parse(reader.getString(3).substring(0, 10));
+                LocalDate modified = LocalDate.parse(reader.getString(4).substring(0, 10));
+
+                int apiId = reader.getInt(5);
+                String apiName = reader.getString(6);
+
+                ApiInvestment toAdd = new ApiInvestment(id, name, amount, openDate, modified, InvestmentType.ApiLinked, apiId, apiName);
+                result.add(toAdd);
+            } while (reader.moveToNext());
+
+        reader.close();
+        return result;
     }
 }

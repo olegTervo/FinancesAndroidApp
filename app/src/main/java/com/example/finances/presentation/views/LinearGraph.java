@@ -217,7 +217,7 @@ public class LinearGraph extends View {
         else
             nextMonthFirst = LocalDate.of(firstDate.getYear(), firstDate.getMonth().plus(1), 1);
 
-        long days = DAYS.between(firstDate, nextMonthFirst)+1;
+        long days = DAYS.between(firstDate, nextMonthFirst);
         drawVerticalLine(canvas, monthPaint, height+400, Math.round(width/30*days));
     }
 

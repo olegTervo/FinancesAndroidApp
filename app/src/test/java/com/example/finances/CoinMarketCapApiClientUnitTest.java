@@ -9,7 +9,7 @@ import com.example.finances.domain.enums.CurrencyType;
 import com.example.finances.domain.models.Api;
 import com.example.finances.domain.models.api.CoinListDto;
 import com.example.finances.frameworks_and_drivers.api_gateway.ApiInterface;
-import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +24,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CoinMarketCapApiGatewayUnitTest {
-    @Mock
+public class CoinMarketCapApiClientUnitTest {
+
     private Api coinMarketCap;
     @Mock
     private ApiInterface coinMarketCapInterface;
@@ -34,13 +34,13 @@ public class CoinMarketCapApiGatewayUnitTest {
     @Mock
     private Callback<CoinListDto> callback;
 
-    private CoinMarketCapApiGateway apiGateway;
+    private CoinMarketCapApiClient apiGateway;
 
     @Before
     public void prepare() {
         MockitoAnnotations.openMocks(this);
-        when(coinMarketCap.getKey()).thenReturn("test-api-key");
-        apiGateway = new CoinMarketCapApiGateway(coinMarketCap, coinMarketCapInterface);
+        coinMarketCap = new Api(1, "test", "", "test-api-key");
+        apiGateway = new CoinMarketCapApiClient(coinMarketCap, coinMarketCapInterface);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class CoinMarketCapApiGatewayUnitTest {
         ArgumentCaptor<Callback<CoinListDto>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
 
         // Act: Call the method
-        apiGateway.getCoins(callbackCaptor.capture(), CurrencyType.EUR);
+        apiGateway.getCoins(callbackCaptor.capture(), any(CurrencyType.class));
 
         // Simulate API success response
         callbackCaptor.getValue().onResponse(mockCall, Response.success(mockResponse));
@@ -73,7 +73,7 @@ public class CoinMarketCapApiGatewayUnitTest {
         ArgumentCaptor<Callback<CoinListDto>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
 
         // Act: Call the method
-        apiGateway.getCoins(callbackCaptor.capture(), CurrencyType.EUR);
+        apiGateway.getCoins(callbackCaptor.capture(), any(CurrencyType.class));
 
         // Simulate API failure
         Throwable apiError = new Throwable("API request failed");
@@ -94,6 +94,9 @@ public class CoinMarketCapApiGatewayUnitTest {
                 .thenReturn(mockCall);
 
         apiGateway.getCoins(callback, CurrencyType.EUR);
+        Throwable apiError = new Throwable("API request failed");
+        callback.onFailure(mockCall, apiError);
+
 
         // ✅ Wait up to 5 seconds for response
         boolean completed = latch.await(5, TimeUnit.SECONDS);

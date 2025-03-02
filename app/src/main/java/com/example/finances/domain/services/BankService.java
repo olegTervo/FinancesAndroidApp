@@ -14,7 +14,9 @@ import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelpe
 import java.util.ArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class BankService {
     private DatabaseHelper db;
 

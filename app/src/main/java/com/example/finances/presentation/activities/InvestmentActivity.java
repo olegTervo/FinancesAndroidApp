@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class InvestmentActivity extends BaseActivity {
     private List<HistoryPrice> investments;
 
@@ -143,17 +146,18 @@ public class InvestmentActivity extends BaseActivity {
             }
         });
     }
+
     private IApiCallback getCallback() {
         return new IApiCallback() {
             @Override
             public void onSuccess() {
-                ShowConfirmation(findViewById(R.id.investmentGraph), "Syncronized!", 1000);
+                ShowConfirmation(findViewById(R.id.investmentView), "Syncronized!", 1000);
                 refresh();
             }
 
             @Override
             public void onFailure(Throwable t) {
-                ShowError(findViewById(R.id.investmentGraph), "Callback failed");
+                ShowError(findViewById(R.id.investmentView), "Callback failed");
                 LogToFile("ERROR: " + t.getMessage());
                 refresh();
             }

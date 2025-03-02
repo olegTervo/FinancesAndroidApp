@@ -24,6 +24,9 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FullPriceShopActivity extends BaseActivity {
     public static final String FullPriceShopName = "FullPriceShop";
 

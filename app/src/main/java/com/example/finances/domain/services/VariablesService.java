@@ -8,7 +8,9 @@ import com.example.finances.domain.models.ValueDate;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class VariablesService {
 
     private IValueDateRepository valueDateRepository;

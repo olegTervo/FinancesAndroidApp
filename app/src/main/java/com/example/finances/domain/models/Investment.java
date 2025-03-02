@@ -87,8 +87,14 @@ public class Investment {
     @Override
     public String toString() {
         if (getLastPrice() != null)
-            return "id:" + id + "|" + name + "|" + getLastPrice().GetPrice() + "€|" + amount + "|" + openDate.toString() + "|" + (this instanceof ApiInvestment);
+            return "id:" + id + "|"
+                    + name + "|"
+                    + String.format("%.4f", getLastPrice().GetPrice()) + "€|"
+                    + amount + "|"
+                    + openDate.toString() + "|"
+                    + (this instanceof ApiInvestment) + "|"
+                    + String.format("%.4f", amount*getLastPrice().GetPrice());
 
-        return "id:" + id + "|" + name + "|" + (-1) + "€|" + amount + "|" + openDate.toString() + "|" + (this instanceof ApiInvestment);
+        return "id:" + id + "|" + name + "|" + (-1) + "€|" + amount + "|" + openDate.toString() + "|" + (this instanceof ApiInvestment) + "|" + "-1";
     }
 }

@@ -13,6 +13,9 @@ import com.example.finances.R;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AddItemActivity extends BaseActivity {
 
     @Inject

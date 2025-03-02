@@ -12,7 +12,9 @@ import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelpe
 import java.util.ArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class ShopService {
     private DatabaseHelper db;
     private IAccountRepository accountRepository;
@@ -31,6 +33,7 @@ public class ShopService {
         this.accountRepository = accountRepository;
         this.shopRepository = shopRepository;
         this.shopItemRepository = shopItemRepository;
+        this.priceRepository = priceRepository;
         this.db = db;
     }
 
@@ -77,8 +80,8 @@ public class ShopService {
     public boolean CreateShopItem(String name, long shopId, float buyPrice, float sellPrice) {
         boolean result = shopItemRepository.CreateItem(name, shopId);
 
-        result = result && priceRepository.CreatePrice(shopItemRepository.GetShopItemNumber(name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.BuyPrice), buyPrice);
-        result = result && priceRepository.CreatePrice(shopItemRepository.GetShopItemNumber(name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.BuyPrice), sellPrice);
+        result = result && priceRepository.CreatePrice(shopItemRepository.GetShopItemNumber(name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.BuyPrice), buyPrice) != null;
+        result = result && priceRepository.CreatePrice(shopItemRepository.GetShopItemNumber(name), PriceType.ShopItem, ShopItemPriceType.toInt(ShopItemPriceType.SellPrice), sellPrice) != null;
 
         return result;
     }

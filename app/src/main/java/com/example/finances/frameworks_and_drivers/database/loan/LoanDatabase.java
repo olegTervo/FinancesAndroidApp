@@ -4,9 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
 import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDatabase;
 
-public class LoanDatabase extends SQLiteOpenHelper {
+public class LoanDatabase extends DatabaseHelper {
     public static final String LOAN_TABLE_NAME = "Loan";
     public static final String LOAN_TABLE_UNPAID_COLUMN_NAME = "Unpaid";
     public static final String LOAN_TABLE_RATE_COLUMN_NAME = "Rate";
@@ -16,7 +17,7 @@ public class LoanDatabase extends SQLiteOpenHelper {
     private static volatile LoanDatabase INSTANCE;
 
     public LoanDatabase(Context context) {
-        super(context, "finances.db", null, 17);
+        super(context);
     }
 
     public static synchronized LoanDatabase getInstance(Context context) {
@@ -24,21 +25,6 @@ public class LoanDatabase extends SQLiteOpenHelper {
             INSTANCE = new LoanDatabase(context.getApplicationContext());
         }
         return INSTANCE;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CreateTableString());
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 17)
-            return;
-
-        if (oldVersion == 17 && newVersion == 18) {
-            //do update
-        }
     }
 
     public static String CreateTableString() {

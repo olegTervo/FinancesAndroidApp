@@ -1,6 +1,6 @@
 package com.example.finances.interface_adapters.dependency_injection;
 
-import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiClient;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
 import com.example.finances.frameworks_and_drivers.database.api.ApiDao;
 import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
@@ -48,8 +48,8 @@ public class Dependencies {
 
     @Provides
     @Singleton
-    public static InvestmentRepository provideInvestmentRepository(InvestmentDao dao) {
-        return new InvestmentRepository(dao);
+    public static InvestmentRepository provideInvestmentRepository(InvestmentDao dao, PriceDao priceDao) {
+        return new InvestmentRepository(dao, priceDao);
     }
 
     @Provides
@@ -96,7 +96,7 @@ public class Dependencies {
 
     @Provides
     @Singleton
-    public static CoinMarketCapApi provideCoinMarketCupApi(CoinMarketCapApiGateway api, PriceDao priceDao) {
+    public static CoinMarketCapApi provideCoinMarketCupApi(CoinMarketCapApiClient api, PriceDao priceDao) {
         return new CoinMarketCapApi(api, priceDao);
     }
 }

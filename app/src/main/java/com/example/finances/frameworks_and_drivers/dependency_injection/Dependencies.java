@@ -5,7 +5,7 @@ import android.content.Context;
 import com.example.finances.domain.enums.ApiType;
 import com.example.finances.domain.models.Api;
 import com.example.finances.frameworks_and_drivers.api_gateway.ApiClient;
-import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiClient;
 import com.example.finances.frameworks_and_drivers.api_gateway.ApiInterface;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDao;
 import com.example.finances.frameworks_and_drivers.database.account.AccountDatabase;
@@ -183,8 +183,8 @@ public class Dependencies {
 
     @Provides
     @Singleton
-    public static CoinMarketCapApiGateway provideCoinMarketCapApiGateway(Api api, ApiInterface apiInterface) {
-        return new CoinMarketCapApiGateway(api, apiInterface);
+    public static CoinMarketCapApiClient provideCoinMarketCapApiGateway(Api api, ApiInterface apiInterface) {
+        return new CoinMarketCapApiClient(api, apiInterface);
     }
 
 }

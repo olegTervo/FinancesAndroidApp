@@ -3,9 +3,7 @@ package com.example.finances;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 import com.example.finances.domain.enums.CurrencyType;
 import com.example.finances.domain.enums.InvestmentType;
@@ -13,8 +11,7 @@ import com.example.finances.domain.interfaces.api.IApiCallback;
 import com.example.finances.domain.models.Api;
 import com.example.finances.domain.models.ApiInvestment;
 import com.example.finances.domain.models.Investment;
-import com.example.finances.domain.models.api.CoinListDto;
-import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiGateway;
+import com.example.finances.frameworks_and_drivers.api_gateway.CoinMarketCapApiClient;
 import com.example.finances.frameworks_and_drivers.database.price.PriceDao;
 import com.example.finances.interface_adapters.api.CoinMarketCapApi;
 
@@ -28,7 +25,7 @@ import java.util.ArrayList;
 
 public class CoinMarketCapApiUnitTest {
     @Mock
-    private CoinMarketCapApiGateway apiGateway;
+    private CoinMarketCapApiClient apiGateway;
     @Mock
     private PriceDao priceDao;
 

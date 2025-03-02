@@ -11,6 +11,9 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LogActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

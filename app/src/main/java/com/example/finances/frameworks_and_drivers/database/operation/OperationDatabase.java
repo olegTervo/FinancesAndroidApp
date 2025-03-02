@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class OperationDatabase extends SQLiteOpenHelper {
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+
+public class OperationDatabase extends DatabaseHelper {
     public static final String OPERATION_TABLE_NAME = "Operation";
     public static final String OPERATION_TABLE_TYPE_COLUMN_NAME = "Type";
     public static final String OPERATION_TABLE_AMOUNT_COLUMN_NAME = "Amount";
@@ -15,7 +17,7 @@ public class OperationDatabase extends SQLiteOpenHelper {
     private static volatile OperationDatabase INSTANCE;
 
     public OperationDatabase(Context context) {
-        super(context, "finances.db", null, 17);
+        super(context);
     }
 
     public static synchronized OperationDatabase getInstance(Context context) {
@@ -23,21 +25,6 @@ public class OperationDatabase extends SQLiteOpenHelper {
             INSTANCE = new OperationDatabase(context.getApplicationContext());
         }
         return INSTANCE;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CreateTableString());
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 17)
-            return;
-
-        if (oldVersion == 17 && newVersion == 18) {
-            //do update
-        }
     }
 
     public static String CreateTableString() {

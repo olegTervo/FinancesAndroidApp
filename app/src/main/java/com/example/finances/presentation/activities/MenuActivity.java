@@ -8,6 +8,9 @@ import android.widget.Button;
 import com.example.finances.R;
 import com.example.finances.databinding.ActivityMenuBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MenuActivity extends BaseActivity {
 
     private ActivityMenuBinding binding;

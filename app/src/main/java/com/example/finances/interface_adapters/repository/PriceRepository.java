@@ -28,7 +28,7 @@ public class PriceRepository implements IPriceRepository {
     }
 
     @Override
-    public boolean CreatePrice(long itemId, PriceType priceType, int additionalType, float price) {
+    public Price CreatePrice(long itemId, PriceType priceType, int additionalType, float price) {
         return priceDao.CreatePrice(itemId, priceType, additionalType, price);
     }
 

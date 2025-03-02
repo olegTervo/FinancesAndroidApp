@@ -1,20 +1,25 @@
 package com.example.finances.interface_adapters.repository;
 
 import com.example.finances.domain.enums.InvestmentType;
+import com.example.finances.domain.enums.PriceType;
 import com.example.finances.domain.interfaces.IInvestmentRepository;
 import com.example.finances.domain.models.Investment;
 import com.example.finances.frameworks_and_drivers.database.investment.InvestmentDao;
+import com.example.finances.frameworks_and_drivers.database.price.PriceDao;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 public class InvestmentRepository implements IInvestmentRepository {
     private final InvestmentDao investmentDao;
+    private final PriceDao priceDao;
 
     @Inject
-    public InvestmentRepository(InvestmentDao dao) {
-        investmentDao = dao;
+    public InvestmentRepository(InvestmentDao dao, PriceDao priceDao) {
+        this.investmentDao = dao;
+        this.priceDao = priceDao;
     }
 
     @Override
@@ -23,12 +28,12 @@ public class InvestmentRepository implements IInvestmentRepository {
     }
 
     @Override
-    public ArrayList<Investment> GetInvestments() {
+    public List<Investment> GetInvestments() {
         return investmentDao.GetInvestments();
     }
 
     @Override
-    public ArrayList<Investment> SearchInvestments(InvestmentType type) {
+    public List<Investment> SearchInvestments(InvestmentType type) {
         return investmentDao.SearchInvestments(type);
     }
 
@@ -46,6 +51,9 @@ public class InvestmentRepository implements IInvestmentRepository {
 
     @Override
     public boolean DeleteInvestment(long id) {
-        return investmentDao.DeleteInvestment(id);
+        if( priceDao.DeletePrices(id, PriceType.Investment) )
+            return investmentDao.DeleteInvestment(id);
+
+        return false;
     }
 }

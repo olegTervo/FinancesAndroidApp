@@ -15,6 +15,9 @@ import com.example.finances.presentation.views.MyEasyTable;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class EventsActivity extends BaseActivity {
     @Inject
     BankService bankService;

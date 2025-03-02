@@ -9,12 +9,12 @@ import javax.inject.Inject;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class CoinMarketCapApiGateway {
+public class CoinMarketCapApiClient {
     private Api coinMarketCap;
     private ApiInterface currenciesApi;
 
     @Inject
-    public CoinMarketCapApiGateway(Api coinMarketCap, ApiInterface coinMarketCapInterface) {
+    public CoinMarketCapApiClient(Api coinMarketCap, ApiInterface coinMarketCapInterface) {
         this.coinMarketCap = coinMarketCap;
         this.currenciesApi = coinMarketCapInterface;
         //currenciesApi = ApiClient.getClient("https://sandbox-api.coinmarketcap.com").create(ApiInterface.class);

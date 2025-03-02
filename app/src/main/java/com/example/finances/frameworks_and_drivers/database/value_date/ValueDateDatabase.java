@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class ValueDateDatabase extends SQLiteOpenHelper {
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+
+public class ValueDateDatabase extends DatabaseHelper {
 
     public static final String VALUE_DATE_TABLE_NAME = "ValueDate";
     public static final String VALUE_DATE_ID_COLUMN_NAME = "Id";
@@ -15,7 +17,7 @@ public class ValueDateDatabase extends SQLiteOpenHelper {
     private static volatile ValueDateDatabase INSTANCE;
 
     public ValueDateDatabase(Context context) {
-        super(context, "finances.db", null, 17);
+        super(context);
     }
 
     public static synchronized ValueDateDatabase getInstance(Context context) {
@@ -23,21 +25,6 @@ public class ValueDateDatabase extends SQLiteOpenHelper {
             INSTANCE = new ValueDateDatabase(context.getApplicationContext());
         }
         return INSTANCE;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CreateTableString());
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 17)
-            return;
-
-        if (oldVersion == 17 && newVersion == 18) {
-            //do update
-        }
     }
 
     public static String CreateTableString() {

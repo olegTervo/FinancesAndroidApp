@@ -21,8 +21,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public abstract class BaseActivity extends AppCompatActivity {
     public static final int MAX_LOG_ROWS = 1000;
 
@@ -31,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             File log = getLogFile();
 
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(log, true));
-            outputStreamWriter.write(message + "\n");
+            outputStreamWriter.write(getTime() + message + "\n");
             outputStreamWriter.close();
 
             ShowConfirmation(view, "Log row saved", 2000);
@@ -46,7 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             File log = getLogFile();
 
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(log, true));
-            outputStreamWriter.write(message + "\n");
+            outputStreamWriter.write(getTime() + message + "\n");
             outputStreamWriter.close();
         }
         catch (Exception e) {
@@ -181,5 +186,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         finally {
             return count;
         }
+    }
+
+    private static String getTime() {
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("[dd/MM/yyyy HH:mm:ss] "));
     }
 }

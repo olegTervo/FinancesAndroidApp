@@ -13,6 +13,9 @@ import com.example.finances.domain.enums.VariableType;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SettingsActivity extends BaseActivity {
 
     @Inject

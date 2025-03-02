@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class ShopItemDatabase extends SQLiteOpenHelper {
+import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
+
+public class ShopItemDatabase extends DatabaseHelper {
 
     public static final String SHOP_ITEM_TABLE_NAME = "ShopItem";
     public static final String SHOP_ITEM_ID_COLUMN_NAME = "Id";
@@ -15,7 +17,7 @@ public class ShopItemDatabase extends SQLiteOpenHelper {
     private static volatile ShopItemDatabase INSTANCE;
 
     public ShopItemDatabase(Context context) {
-        super(context, "finances.db", null, 17);
+        super(context);
     }
 
     public static synchronized ShopItemDatabase getInstance(Context context) {
@@ -23,21 +25,6 @@ public class ShopItemDatabase extends SQLiteOpenHelper {
             INSTANCE = new ShopItemDatabase(context.getApplicationContext());
         }
         return INSTANCE;
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CreateTableString());
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 17)
-            return;
-
-        if (oldVersion == 17 && newVersion == 18) {
-            //do update
-        }
     }
 
     public static String CreateTableString() {

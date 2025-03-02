@@ -4,7 +4,7 @@ import com.example.finances.domain.interfaces.IApiRepository;
 import com.example.finances.domain.interfaces.IInvestmentRepository;
 import com.example.finances.domain.interfaces.IPriceRepository;
 import com.example.finances.domain.interfaces.IValueDateRepository;
-import com.example.finances.domain.interfaces.api.ICoinMarkerCapApi;
+import com.example.finances.domain.interfaces.api.ICoinMarketCapApi;
 import com.example.finances.domain.models.Api;
 import com.example.finances.domain.models.Price;
 import com.example.finances.frameworks_and_drivers.database.common.DatabaseHelper;
@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class InvestmentsService {
-    private ICoinMarkerCapApi coinMarkerCapApi;
+    private ICoinMarketCapApi coinMarkerCapApi;
 
     private IInvestmentRepository investmentRepository;
     private IApiRepository apiRepository;
@@ -34,7 +36,7 @@ public class InvestmentsService {
 
     @Inject
     public InvestmentsService(
-            ICoinMarkerCapApi coinMarkerCupApi,
+            ICoinMarketCapApi coinMarkerCupApi,
             IInvestmentRepository investmentRepository,
             IApiRepository apiRepository,
             IPriceRepository priceRepository,
@@ -75,6 +77,9 @@ public class InvestmentsService {
 
             this.coinMarkerCapApi.syncPricesAsync(toSync, c);
         }
+        else {
+            callback.onSuccess();
+        }
     }
 
     public Investment getInvestment(long id) {
@@ -87,7 +92,7 @@ public class InvestmentsService {
 
     public Investment createInvestment(String name, float amount, float price) {
         Investment newInvestment = investmentRepository.CreateInvestment(name, amount);
-        boolean passed = priceRepository.CreatePrice(newInvestment.getId(), PriceType.Investment, 0, price);
+        priceRepository.CreatePrice(newInvestment.getId(), PriceType.Investment, 0, price);
 
         return newInvestment;
     }

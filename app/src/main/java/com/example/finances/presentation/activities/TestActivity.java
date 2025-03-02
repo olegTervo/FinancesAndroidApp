@@ -7,6 +7,9 @@ import android.widget.EditText;
 
 import com.example.finances.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class TestActivity extends BaseActivity {
 
     @Override

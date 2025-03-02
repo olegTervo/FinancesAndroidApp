@@ -14,6 +14,9 @@ import com.example.finances.domain.enums.ValueDateType;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class EditInvestmentsActivity extends BaseActivity {
     private DatabaseHelper db;
 
@@ -44,7 +47,10 @@ public class EditInvestmentsActivity extends BaseActivity {
 
                 Investment inv = investmentService.getInvestment(toDelete);
                 //float p = PriceHelper.GetPrice(db, toDelete, PriceType.Investment, 0); TODO check
-                completed = variablesService.increaseTopValue(-(inv.getAmount()*inv.getLastPrice().GetPrice()), ValueDateType.Investments);
+                if (inv.getLastPrice() != null)
+                    completed = variablesService.increaseTopValue(-(inv.getAmount()*inv.getLastPrice().GetPrice()), ValueDateType.Investments);
+                else
+                    completed = true;
 
                 completed = completed && investmentService.deleteInvestment(toDelete);
 

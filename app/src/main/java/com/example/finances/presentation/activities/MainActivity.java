@@ -30,6 +30,9 @@ import java.util.Collections;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends BaseActivity {
     @Inject
     IApiRepository apiRepository;

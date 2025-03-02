@@ -10,7 +10,7 @@ import com.example.finances.domain.interfaces.IShopItemRepository;
 import com.example.finances.domain.interfaces.IShopRepository;
 import com.example.finances.domain.interfaces.IValueDateRepository;
 import com.example.finances.domain.interfaces.IVariableRepository;
-import com.example.finances.domain.interfaces.api.ICoinMarkerCapApi;
+import com.example.finances.domain.interfaces.api.ICoinMarketCapApi;
 import com.example.finances.domain.services.BankService;
 import com.example.finances.domain.services.InvestmentsService;
 import com.example.finances.domain.services.ShopService;
@@ -101,7 +101,7 @@ public class Dependencies {
 
     @Provides
     @Singleton
-    public static ICoinMarkerCapApi provideCoinMarketCupApiInterface(CoinMarketCapApi api) {
+    public static ICoinMarketCapApi provideCoinMarketCupApiInterface(CoinMarketCapApi api) {
         return api;
     }
 
@@ -119,7 +119,7 @@ public class Dependencies {
     @Provides
     @Singleton
     public static InvestmentsService provideInvestmentService(
-            ICoinMarkerCapApi coinMarkerCapApi,
+            ICoinMarketCapApi coinMarkerCapApi,
             IInvestmentRepository investmentRepository,
             IApiRepository apiRepository,
             IPriceRepository priceRepository,

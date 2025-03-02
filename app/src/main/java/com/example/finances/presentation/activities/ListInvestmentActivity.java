@@ -12,8 +12,10 @@ import com.example.finances.presentation.views.MyEasyTable;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class ListInvestmentActivity extends AppCompatActivity {
-    private DatabaseHelper db;
     private Object[] investments;
 
     @Inject
@@ -24,8 +26,18 @@ public class ListInvestmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_investment);
 
-        this.db = new DatabaseHelper(this);
-        this.investments = investmentService.getInvestments().toArray();
+        this.investments = investmentService
+                .getInvestments()
+                .stream()
+                .sorted((a, b) -> {
+                    if (a.getLastPrice() == null)
+                        return -1;
+                    if (b.getLastPrice() == null)
+                        return 1;
+
+                    return Float.compare(b.getLastPrice().GetPrice() * b.getAmount(), a.getLastPrice().GetPrice() * a.getAmount());
+                })
+                .toArray();
         setData();
     }
 
